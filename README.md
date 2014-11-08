@@ -38,11 +38,12 @@ Use metadata (metadata gets proxied as post keys):
 
 Metadata is a dictionary, with some handy proxies:
 
-    >>> post.keys()
+    >>> list(post.keys())
     ['layout', 'title']
 
+    >>> from pprint import pprint
     >>> post['excerpt'] = 'tl;dr'
-    >>> post.metadata
+    >>> pprint(post.metadata)
     {'excerpt': 'tl;dr', 'layout': 'post', 'title': 'Hello, world!'}
 
 If you don't need the whole post object, just parse:
@@ -64,7 +65,7 @@ Write back to plain text, too:
 
 Or write to a file (or file-like object):
 
-    >>> from cStringIO import StringIO
+    >>> from io import StringIO
     >>> f = StringIO()
     >>> frontmatter.dump(post, f)
     >>> print(f.getvalue()) # doctest: +NORMALIZE_WHITESPACE
