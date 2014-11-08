@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
+from __future__ import unicode_literals
+
 import codecs
 import re
 import yaml
@@ -10,7 +13,7 @@ __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
 
 FM_RE = re.compile(r'^\s*---(.*)---\s*$', re.MULTILINE | re.DOTALL)
 
-POST_TEMPLATE = u"""\
+POST_TEMPLATE = """\
 ---
 {metadata}
 ---
