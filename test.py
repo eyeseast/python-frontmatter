@@ -17,9 +17,8 @@ class FrontmatterTest(unittest.TestCase):
 
         self.assertTrue(isinstance(chinese.content, unicode))
 
-        with self.assertRaises(UnicodeEncodeError):
-            # this shouldn't work as ascii, because it's Hanzi
-            chinese.content.encode('ascii')
+        # this shouldn't work as ascii, because it's Hanzi
+        self.assertRaises(UnicodeEncodeError, chinese.content.encode, 'ascii')
 
 
 if __name__ == "__main__":
