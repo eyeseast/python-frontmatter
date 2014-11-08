@@ -61,5 +61,18 @@ Write back to plain text, too:
     title: Hello, world!
     ---
     Well, hello there, world.
-    
+
+Or write to a file (or file-like object):
+
+    >>> from cStringIO import StringIO
+    >>> f = StringIO()
+    >>> frontmatter.dump(post, f)
+    >>> print f.getvalue() # doctest: +NORMALIZE_WHITESPACE
+    ---
+    excerpt: tl;dr
+    layout: post
+    title: Hello, world!
+    ---
+    Well, hello there, world.
+
 

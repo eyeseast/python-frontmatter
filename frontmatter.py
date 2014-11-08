@@ -1,6 +1,7 @@
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
+import codecs
 import re
 import yaml
 
@@ -50,7 +51,7 @@ def load(fd, **defaults):
         text = fd.read()
 
     else:
-        with open(fd) as f:
+        with codecs.open(fd, 'r', 'utf-8') as f:
             text = f.read()
 
     return loads(text, **defaults)
@@ -68,6 +69,13 @@ def dump(post, fd):
     """
     Serialize post to a string and dump to a file-like object.
     """
+    content = dumps(post)
+    if hasattr(fd, 'write'):
+        fd.write(content)
+
+    else:
+        with codecs.open(fd, 'w', 'utf-8') as f:
+            f.write(content)
 
 
 def dumps(post):
