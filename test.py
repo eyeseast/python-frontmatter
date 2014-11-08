@@ -15,7 +15,7 @@ class FrontmatterTest(unittest.TestCase):
         "Ensure unicode is parsed correctly"
         chinese = frontmatter.load('tests/chinese.txt')
 
-        self.assertIsInstance(chinese.content, unicode)
+        self.assertTrue(isinstance(chinese.content, unicode))
 
         with self.assertRaises(UnicodeEncodeError):
             # this shouldn't work as ascii, because it's Hanzi
