@@ -28,12 +28,12 @@ Or load from text:
 
 Access content:
 
-    >>> print post.content
+    >>> print(post.content)
     Well, hello there, world.
 
 Use metadata (metadata gets proxied as post keys):
 
-    >>> print post['title']
+    >>> print(post['title'])
     Hello, world!
 
 Metadata is a dictionary, with some handy proxies:
@@ -49,12 +49,12 @@ If you don't need the whole post object, just parse:
 
     >>> with open('tests/hello-world.markdown') as f:
     ...     metadata, content = frontmatter.parse(f.read())
-    >>> print metadata['title']
+    >>> print(metadata['title'])
     Hello, world!
 
 Write back to plain text, too:
 
-    >>> print frontmatter.dumps(post) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
     ---
     excerpt: tl;dr
     layout: post
@@ -67,7 +67,7 @@ Or write to a file (or file-like object):
     >>> from cStringIO import StringIO
     >>> f = StringIO()
     >>> frontmatter.dump(post, f)
-    >>> print f.getvalue() # doctest: +NORMALIZE_WHITESPACE
+    >>> print(f.getvalue()) # doctest: +NORMALIZE_WHITESPACE
     ---
     excerpt: tl;dr
     layout: post
