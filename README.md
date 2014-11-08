@@ -38,7 +38,7 @@ Use metadata (metadata gets proxied as post keys):
 
 Metadata is a dictionary, with some handy proxies:
 
-    >>> list(post.keys())
+    >>> sorted(post.keys())
     ['layout', 'title']
 
     >>> from pprint import pprint
