@@ -25,7 +25,7 @@ setup(
     author = 'Chris Amico',
     author_email = 'eyeseast@gmail.com',
     url = 'https://github.com/eyeseast/python-frontmatter',
-    py_modules = ['frontmatter'],
+    packages = ['frontmatter'],
     include_package_data = True,
     install_requires = requirements,
     license = 'MIT',
