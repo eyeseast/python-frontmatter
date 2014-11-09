@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import doctest
 import unittest
+import six
 
 import frontmatter
 
@@ -17,7 +18,7 @@ class FrontmatterTest(unittest.TestCase):
         "Ensure unicode is parsed correctly"
         chinese = frontmatter.load('tests/chinese.txt')
 
-        self.assertTrue(isinstance(chinese.content, unicode))
+        self.assertTrue(isinstance(chinese.content, six.text_type))
 
         # this shouldn't work as ascii, because it's Hanzi
         self.assertRaises(UnicodeEncodeError, chinese.content.encode, 'ascii')

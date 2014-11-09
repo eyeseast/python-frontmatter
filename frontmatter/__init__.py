@@ -8,6 +8,8 @@ import codecs
 import re
 import yaml
 
+from .util import u
+
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
 
 
@@ -29,6 +31,10 @@ def parse(text, **defaults):
     If frontmatter is not found, returns an empty metadata dictionary
     and original text content.
     """
+    # ensure unicode first
+    text = u(text)
+
+    # match, returning empty metadata and the original content on failure
     match = FM_RE.search(text)
     if match is None:
         return ({}, text)
