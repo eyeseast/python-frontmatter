@@ -118,6 +118,10 @@ class Post(object):
         "Delete a metadata key"
         del self.metadata[name]
 
+    def get(self, key, default=None):
+        "Get a key, fallback to default"
+        return self.metadata.get(key, default)
+
     def keys(self):
         return self.metadata.keys()
 
