@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from __future__ import print_function
 
+import codecs
 import doctest
 import unittest
 import six
@@ -22,6 +23,23 @@ class FrontmatterTest(unittest.TestCase):
 
         # this shouldn't work as ascii, because it's Hanzi
         self.assertRaises(UnicodeEncodeError, chinese.content.encode, 'ascii')
+
+    def test_no_frontmatter(self):
+        "This is not a zen exercise."
+        post = frontmatter.load('tests/no-frontmatter.txt')
+        with codecs.open('tests/no-frontmatter.txt', 'r', 'utf-8') as f:
+            content = f.read().strip()
+
+        self.assertEqual(post.metadata, {})
+        self.assertEqual(post.content, content)
+
+    def test_empty_frontmatter(self):
+        "Frontmatter, but no metadata"
+        post = frontmatter.load('tests/empty-frontmatter.txt')
+        content = "I have frontmatter but no metadata."
+
+        self.assertEqual(post.metadata, {})
+        self.assertEqual(post.content, content)
 
 
 if __name__ == "__main__":

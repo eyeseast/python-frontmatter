@@ -47,7 +47,9 @@ def parse(text, **defaults):
     metadata.update(defaults)
 
     # parse yaml
-    metadata.update(yaml.safe_load(match.groups()[0]))
+    fm = yaml.safe_load(match.groups()[0])
+    if isinstance(fm, dict):
+        metadata.update(fm)
 
     return metadata, content
 
