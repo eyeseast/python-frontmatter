@@ -125,7 +125,12 @@ class Post(object):
         return self.metadata.get(key, default)
 
     def keys(self):
+        "Return metadata keys"
         return self.metadata.keys()
+
+    def values(self):
+        "Return metadata values"
+        return self.metadata.values()
 
     def to_dict(self):
         "Post as a dict, for serializing"

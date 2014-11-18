@@ -41,6 +41,16 @@ class FrontmatterTest(unittest.TestCase):
         self.assertEqual(post.metadata, {})
         self.assertEqual(post.content, content)
 
+    def test_to_dict(self):
+        "Dump a post as a dict, for serializing"
+        post = frontmatter.load('tests/network-diagrams.markdown')
+        post_dict = post.to_dict()
+
+        for k, v in post.metadata.items():
+            self.assertEqual(post_dict[k], v)
+
+        self.assertEqual(post_dict['content'], post.content)
+
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
