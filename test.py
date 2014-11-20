@@ -15,6 +15,13 @@ class FrontmatterTest(unittest.TestCase):
     Tests for parsing various kinds of content and metadata
     """
 
+    def test_with_markdown_content(self):
+        "Parse frontmatter and only the frontmatter"
+        post = frontmatter.load('tests/hello-markdown.markdown')
+
+        self.assertEqual(post.metadata, 
+            {'author': 'bob', 'something': 'else', 'test': 'test'})
+
     def test_unicode_post(self):
         "Ensure unicode is parsed correctly"
         chinese = frontmatter.load('tests/chinese.txt')

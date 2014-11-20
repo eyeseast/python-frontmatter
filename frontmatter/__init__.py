@@ -13,7 +13,7 @@ from .util import u
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
 
 
-FM_RE = re.compile(r'^\s*---(.*)---\s*$', re.MULTILINE | re.DOTALL)
+FM_RE = re.compile(r'^\s*---$(.*)^---\s*$', re.DOTALL | re.MULTILINE)
 
 POST_TEMPLATE = """\
 ---
