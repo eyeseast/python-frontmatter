@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import codecs
+import json
 import doctest
 import unittest
 import six
@@ -19,8 +20,9 @@ class FrontmatterTest(unittest.TestCase):
         "Parse frontmatter and only the frontmatter"
         post = frontmatter.load('tests/hello-markdown.markdown')
 
-        self.assertEqual(post.metadata, 
-            {'author': 'bob', 'something': 'else', 'test': 'test'})
+        metadata = {'author': 'bob', 'something': 'else', 'test': 'tester'}
+        for k, v in metadata.items():
+            self.assertEqual(post[k], v)
 
     def test_unicode_post(self):
         "Ensure unicode is parsed correctly"
@@ -43,7 +45,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_empty_frontmatter(self):
         "Frontmatter, but no metadata"
         post = frontmatter.load('tests/empty-frontmatter.txt')
-        content = "I have frontmatter but no metadata."
+        content = six.text_type("I have frontmatter but no metadata.")
 
         self.assertEqual(post.metadata, {})
         self.assertEqual(post.content, content)

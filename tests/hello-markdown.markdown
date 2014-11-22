@@ -1,5 +1,5 @@
 ---
-test: test
+test: tester
 author: bob
 something: else
 ---
@@ -11,3 +11,8 @@ title2
 ------
 
 Hello.
+
+Just need three dashes
+---
+
+And this might break.

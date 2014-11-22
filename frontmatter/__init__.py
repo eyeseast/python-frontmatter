@@ -5,15 +5,12 @@ Python Frontmatter: Parse and manage posts with YAML frontmatter
 from __future__ import unicode_literals
 
 import codecs
-import re
 import yaml
 
 from .util import u
 
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
 
-
-FM_RE = re.compile(r'^\s*---$(.*)^---\s*$', re.DOTALL | re.MULTILINE)
 
 POST_TEMPLATE = """\
 ---
@@ -34,24 +31,23 @@ def parse(text, **defaults):
     # ensure unicode first
     text = u(text)
 
-    # match, returning empty metadata and the original content on failure
-    match = FM_RE.search(text)
-    if match is None:
-        return ({}, text)
-
-    # content is everything after metadata
-    content = text[match.end():].strip()
+    # split on the first two triple-dashes
+    try:
+        _, fm, content = text.split('---', 2)
+    except ValueError, e:
+        # if we can't split, bail
+        return {}, text
 
     # metadata is a dictionary, with defaults
     metadata = {}
     metadata.update(defaults)
 
     # parse yaml
-    fm = yaml.safe_load(match.groups()[0])
+    fm = yaml.safe_load(fm)
     if isinstance(fm, dict):
         metadata.update(fm)
 
-    return metadata, content
+    return metadata, content.strip()
 
 
 def load(fd, **defaults):
