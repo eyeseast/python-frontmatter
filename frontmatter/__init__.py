@@ -34,7 +34,7 @@ def parse(text, **defaults):
     # split on the first two triple-dashes
     try:
         _, fm, content = text.split('---', 2)
-    except ValueError, e:
+    except ValueError:
         # if we can't split, bail
         return {}, text
 
