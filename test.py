@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import codecs
+import glob
 import json
 import doctest
 import unittest
@@ -15,6 +16,10 @@ class FrontmatterTest(unittest.TestCase):
     """
     Tests for parsing various kinds of content and metadata
     """
+    def test_all_the_tests(self):
+        "Sanity check that everything in the tests folder loads without errors"
+        for filename in glob.glob('tests/*'):
+            frontmatter.load(filename)
 
     def test_with_markdown_content(self):
         "Parse frontmatter and only the frontmatter"
