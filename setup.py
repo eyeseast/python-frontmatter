@@ -17,9 +17,12 @@ requirements = [
 ]
 
 
+VERSION = '0.1.5'
+
+
 setup(
     name = 'python-frontmatter',
-    version = '0.1.4',
+    version = VERSION,
     description = 'Parse and manage posts with YAML frontmatter',
     long_description = readme,
     author = 'Chris Amico',
