@@ -13,6 +13,7 @@ with open('README.md') as f:
 
 requirements = [
     'PyYAML',
+    'pyaml'
     'six'
 ]
 
