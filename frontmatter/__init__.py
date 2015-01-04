@@ -35,18 +35,17 @@ def parse(text, **defaults):
     # ensure unicode first
     text = u(text)
 
+    # metadata starts with defaults
+    metadata = defaults.copy()
+
     # split on the first two triple-dashes
     try:
         _, fm, content = FM_BOUNDARY.split(text, 2)
     except ValueError:
         # if we can't split, bail
-        return defaults.copy(), text
+        return metadata, text
 
-    # metadata is a dictionary, with defaults
-    metadata = {}
-    metadata.update(defaults)
-
-    # parse yaml
+    # parse yaml, now that we have frontmatter
     fm = yaml.safe_load(fm)
     if isinstance(fm, dict):
         metadata.update(fm)
