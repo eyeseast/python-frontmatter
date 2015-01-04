@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import codecs
 import re
 import yaml
+import pyaml
 
 from .util import u
 
@@ -92,7 +93,7 @@ def dumps(post):
     """
     Serialize post to a string and return text.
     """
-    metadata = yaml.safe_dump(post.metadata, default_flow_style=False).strip()
+    metadata = pyaml.dump(post.metadata, safe=True).strip()
     return POST_TEMPLATE.format(metadata=metadata, content=post.content).strip()
 
 
