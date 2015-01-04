@@ -40,7 +40,7 @@ def parse(text, **defaults):
         _, fm, content = FM_BOUNDARY.split(text, 2)
     except ValueError:
         # if we can't split, bail
-        return {}, text
+        return defaults.copy(), text
 
     # metadata is a dictionary, with defaults
     metadata = {}
