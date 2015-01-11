@@ -6,6 +6,9 @@ python:
   - "3.3"
   - "3.4"
 # command to install dependencies
-install: "python setup.py install"
+install: 
+# use pyaml for tests above py26
+ - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then pip install pyaml; fi
+ - "python setup.py install"
 # command to run tests
 script: python test.py
