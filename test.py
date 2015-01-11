@@ -13,6 +13,11 @@ import six
 
 import frontmatter
 
+try:
+    import pyaml
+except ImportError:
+    pyaml = None
+
 
 class FrontmatterTest(unittest.TestCase):
     """
@@ -72,8 +77,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
         # pyaml only runs on 2.7 and above
-        if sys.version_info > (2, 6):
-            import pyaml
+        if sys.version_info > (2, 6) and pyaml is not None:
 
             with codecs.open('tests/unpretty.md', 'r', 'utf-8') as f:
                 data = f.read()
