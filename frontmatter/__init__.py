@@ -20,6 +20,7 @@ POST_TEMPLATE = """\
 ---
 {metadata}
 ---
+
 {content}
 """
 
