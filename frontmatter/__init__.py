@@ -8,6 +8,11 @@ import codecs
 import re
 import yaml
 
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    from yaml import SafeDumper
+
 from .util import u
 
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
@@ -76,11 +81,11 @@ def loads(text, **defaults):
     return Post(content, **metadata)
 
 
-def dump(post, fd):
+def dump(post, fd, **kwargs):
     """
     Serialize post to a string and dump to a file-like object.
     """
-    content = dumps(post)
+    content = dumps(post, **kwargs)
     if hasattr(fd, 'write'):
         fd.write(content)
 
@@ -89,11 +94,15 @@ def dump(post, fd):
             f.write(content)
 
 
-def dumps(post):
+def dumps(post, **kwargs):
     """
     Serialize post to a string and return text.
     """
-    metadata = yaml.safe_dump(post.metadata, default_flow_style=False).strip()
+    kwargs.setdefault('Dumper', SafeDumper)
+    kwargs.setdefault('default_flow_style', False)
+
+    metadata = yaml.dump(post.metadata, **kwargs).strip()
+    metadata = u(metadata) # ensure unicode
     return POST_TEMPLATE.format(metadata=metadata, content=post.content).strip()
 
 

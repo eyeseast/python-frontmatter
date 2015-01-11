@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import codecs
+import doctest
 import glob
 import json
-import doctest
+import sys
 import unittest
+
 import six
 
 import frontmatter
@@ -16,6 +18,8 @@ class FrontmatterTest(unittest.TestCase):
     """
     Tests for parsing various kinds of content and metadata
     """
+    maxDiff = None
+
     def test_all_the_tests(self):
         "Sanity check that everything in the tests folder loads without errors"
         for filename in glob.glob('tests/*'):
@@ -64,6 +68,24 @@ class FrontmatterTest(unittest.TestCase):
             self.assertEqual(post_dict[k], v)
 
         self.assertEqual(post_dict['content'], post.content)
+
+    def test_pretty_dumping(self):
+        "Use pyaml to dump nicer"
+        # pyaml only runs on 2.7 and above
+        if sys.version_info > (2, 6):
+            import pyaml
+
+            with codecs.open('tests/unpretty.md', 'r', 'utf-8') as f:
+                data = f.read()
+
+            post = frontmatter.load('tests/unpretty.md')
+            yaml = pyaml.dump(post.metadata)
+
+            # the unsafe dumper gives you nicer output, for times you want that
+            dump = frontmatter.dumps(post, Dumper=pyaml.UnsafePrettyYAMLDumper)
+
+            self.assertEqual(dump, data)
+            self.assertTrue(yaml in dump)
 
 
 if __name__ == "__main__":
