@@ -31,6 +31,11 @@ Access content:
     >>> print(post.content)
     Well, hello there, world.
 
+    # this works, too
+    >>> print(post)
+    Well, hello there, world.
+
+
 Use metadata (metadata gets proxied as post keys):
 
     >>> print(post['title'])

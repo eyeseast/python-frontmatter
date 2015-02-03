@@ -10,4 +10,5 @@ def u(text, encoding='utf-8'):
     if isinstance(text, six.binary_type):
         return text.decode(encoding)
 
-    return six.text_type(text)
+    # it's already unicode
+    return text

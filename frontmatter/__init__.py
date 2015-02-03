@@ -6,6 +6,8 @@ from __future__ import unicode_literals
 
 import codecs
 import re
+
+import six
 import yaml
 
 try:
@@ -114,7 +116,7 @@ class Post(object):
     Don't use this class directly. Use module-level functions load, dump, etc.
     """
     def __init__(self, content, **metadata):
-        self.content = content
+        self.content = u(content)
         self.metadata = metadata
     
     def __getitem__(self, name):
@@ -128,6 +130,17 @@ class Post(object):
     def __delitem__(self, name):
         "Delete a metadata key"
         del self.metadata[name]
+
+    def __bytes__(self):
+        return self.content.encode('utf-8')
+
+    def __str__(self):
+        if six.PY2:
+            return self.__bytes__()
+        return self.content
+
+    def __unicode__(self):
+        return self.content
 
     def get(self, key, default=None):
         "Get a key, fallback to default"

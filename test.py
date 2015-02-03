@@ -74,6 +74,15 @@ class FrontmatterTest(unittest.TestCase):
 
         self.assertEqual(post_dict['content'], post.content)
 
+    def test_to_string(self):
+        "Calling str(post) returns post.content"
+        post = frontmatter.load('tests/hello-world.markdown')
+
+        # test unicode and bytes
+        text = "Well, hello there, world."
+        self.assertEqual(six.text_type(post), text)
+        self.assertEqual(six.binary_type(post), text.decode('utf-8'))
+
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
         # pyaml only runs on 2.7 and above
