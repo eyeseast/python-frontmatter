@@ -81,7 +81,7 @@ class FrontmatterTest(unittest.TestCase):
         # test unicode and bytes
         text = "Well, hello there, world."
         self.assertEqual(six.text_type(post), text)
-        self.assertEqual(six.binary_type(post), text.decode('utf-8'))
+        self.assertEqual(six.binary_type(post), text.encode('utf-8'))
 
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
