@@ -17,6 +17,10 @@ try:
     import pyaml
 except ImportError:
     pyaml = None
+try:
+    import toml
+except ImportError:
+    toml = None
 
 
 class FrontmatterTest(unittest.TestCase):
@@ -99,6 +103,54 @@ class FrontmatterTest(unittest.TestCase):
 
             self.assertEqual(dump, data)
             self.assertTrue(yaml in dump)
+
+    def test_dumping_with_custom_delimiters(self):
+        "dump with custom delimiters"
+        post = frontmatter.load('tests/hello-world.markdown')
+        dump = frontmatter.dumps(post,
+                                 start_delimiter='+++',
+                                 end_delimiter='+++')
+        self.assertTrue('+++' in dump)
+
+    def test_toml(self):
+        "load toml frontmatter"
+        if toml is None:
+            return
+        post = frontmatter.load('tests/hello-toml.markdown')
+        metadata = {'author': 'bob', 'something': 'else', 'test': 'tester'}
+        for k, v in metadata.items():
+            self.assertEqual(post[k], v)
+
+    def test_json(self):
+        "load raw JSON frontmatter"
+        post = frontmatter.load('tests/hello-json.markdown')
+        metadata = {'author': 'bob', 'something': 'else', 'test': 'tester'}
+        for k, v in metadata.items():
+            self.assertEqual(post[k], v)
+
+    def test_custom_handler(self):
+        "allow caller to specify a custom delimiter/handler"
+
+        # not including this in the regular test directory
+        # because it would/should be invalid per the defaults
+        custom = """...
+dummy frontmatter
+...
+dummy content"""
+
+        # and a custom handler that really doesn't do anything
+        class DummyHandler(object):
+            def load(self, fm):
+                return {'value': fm}
+
+            def split(self, text):
+                return "dummy frontmatter", "dummy content"
+
+        # but we tell frontmatter that it is the appropriate handler
+        # for the '...' delimiter
+        post = frontmatter.loads(custom, add_handlers={'...': DummyHandler()})
+
+        self.assertEqual(post['value'], 'dummy frontmatter')
 
 
 if __name__ == "__main__":
