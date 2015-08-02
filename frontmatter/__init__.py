@@ -5,7 +5,6 @@ Python Frontmatter: Parse and manage posts with YAML frontmatter
 from __future__ import unicode_literals
 
 import codecs
-import re
 
 import six
 import yaml
@@ -18,10 +17,6 @@ except ImportError:
 from .util import u
 
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
-
-# match three or more dashes
-# split on this
-FM_BOUNDARY = re.compile(r'^-{3,}$', re.MULTILINE)
 
 POST_TEMPLATE = """\
 ---
@@ -46,12 +41,21 @@ def parse(text, **defaults):
     # metadata starts with defaults
     metadata = defaults.copy()
 
-    # split on the first two triple-dashes
-    try:
-        _, fm, content = FM_BOUNDARY.split(text, 2)
-    except ValueError:
-        # if we can't split, bail
+    # metadata text starts with three dashes and ends with three dashes or three dots
+    lines = text.splitlines(keepends=True)
+    i_start = i_end = -1
+    for i, line in enumerate(lines):
+        if (i_start==-1 and line.rstrip()=='---'):
+            i_start = i
+        elif (i_start!=-1 and line.rstrip() in ('---', '...')):
+            i_end = i
+            break
+
+    if i_end==-1: # if we can't split, bail
         return metadata, text
+    else:
+        fm = ''.join(lines[i_start+1:i_end])
+        content = ''.join(lines[i_end+1:])
 
     # parse yaml, now that we have frontmatter
     fm = yaml.safe_load(fm)
