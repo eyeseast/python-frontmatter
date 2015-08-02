@@ -42,7 +42,7 @@ def parse(text, **defaults):
     metadata = defaults.copy()
 
     # metadata text starts with three dashes and ends with three dashes or three dots
-    lines = text.splitlines(keepends=True)
+    lines = text.splitlines(True)
     i_start = i_end = -1
     for i, line in enumerate(lines):
         if (i_start==-1 and line.rstrip()=='---'):
