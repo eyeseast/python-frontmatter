@@ -7,6 +7,12 @@ This is a small package to load and parse files (or just text) with YAML front m
 
 [![Build Status](https://travis-ci.org/eyeseast/python-frontmatter.svg?branch=master)](https://travis-ci.org/eyeseast/python-frontmatter)
 
+Install:
+--------
+
+    pip install python-frontmatter
+
+
 Usage:
 ------
 
