@@ -100,6 +100,18 @@ class FrontmatterTest(unittest.TestCase):
             self.assertEqual(dump, data)
             self.assertTrue(yaml in dump)
 
+    def test_with_dots(self):
+        "Parse frontmatter and text with ... as metadata end delimiter"
+        post = frontmatter.load('tests/dots.markdown')
+
+        metadata = {'title': 'Hello, world!', 'layout': 'post'}
+        for k, v in metadata.items():
+            self.assertEqual(post[k], v)
+
+        # test unicode and bytes
+        text = "Well, hello there, world."
+        self.assertEqual(six.text_type(post), text)
+        self.assertEqual(six.binary_type(post), text.encode('utf-8'))
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
