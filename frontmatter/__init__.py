@@ -16,7 +16,7 @@ except ImportError:
     from yaml import SafeDumper
 
 from .util import u
-from .handlers import YAMLHandler, JSONHandler, TOMLHandler
+from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
 
 
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
