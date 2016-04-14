@@ -100,6 +100,12 @@ class FrontmatterTest(unittest.TestCase):
             self.assertEqual(dump, data)
             self.assertTrue(yaml in dump)
 
+    def test_with_crlf_string(self):
+        import codecs
+        markdown_bytes = b'---\r\ntitle: "my title"\r\ncontent_type: "post"\r\npublished: no\r\n---\r\n\r\nwrite your content in markdown here'
+        loaded = frontmatter.loads(codecs.decode(markdown_bytes, 'utf-8'))
+        self.assertEqual(loaded['title'], 'my title')
+
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
