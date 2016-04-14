@@ -41,10 +41,7 @@ def parse(text, **defaults):
     and original text content.
     """
     # ensure unicode first
-    if six.PY3:
-        text = codecs.decode(bytes(text, 'utf-8').replace(b'\r\n', b'\n'), 'utf-8')
-    else:
-        text = u(text.replace('\r\n', '\n'))
+    text = u(text)
 
     # metadata starts with defaults
     metadata = defaults.copy()
