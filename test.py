@@ -114,8 +114,9 @@ class FrontmatterTest(unittest.TestCase):
         "dump with custom delimiters"
         post = frontmatter.load('tests/hello-world.markdown')
         dump = frontmatter.dumps(post,
-                                 start_delimiter='+++',
-                                 end_delimiter='+++')
+            start_delimiter='+++',
+            end_delimiter='+++')
+        
         self.assertTrue('+++' in dump)
 
     def test_toml(self):

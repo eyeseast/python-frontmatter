@@ -118,18 +118,12 @@ def dumps(post, **kwargs):
     kwargs.setdefault('Dumper', SafeDumper)
     kwargs.setdefault('default_flow_style', False)
     
-    start_delimiter = '---'
-    if 'start_delimiter' in kwargs:
-        start_delimiter = kwargs['start_delimiter']
-        del kwargs['start_delimiter']
-    
-    end_delimiter = '---'
-    if 'end_delimiter' in kwargs:
-        end_delimiter = kwargs['end_delimiter']
-        del kwargs['end_delimiter']
+    start_delimiter = kwargs.pop('start_delimiter', '---')
+    end_delimiter = kwargs.pop('end_delimiter', '---')
 
     metadata = yaml.dump(post.metadata, **kwargs).strip()
     metadata = u(metadata) # ensure unicode
+
     return POST_TEMPLATE.format(
         metadata=metadata, content=post.content,
         start_delimiter=start_delimiter,
