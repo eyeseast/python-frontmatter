@@ -17,7 +17,7 @@ requirements = [
 ]
 
 
-VERSION = '0.2.1'
+VERSION = '0.3.0'
 
 
 setup(
@@ -35,7 +35,7 @@ setup(
     zip_safe = False,
     keywords = 'frontmatter',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta'
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
