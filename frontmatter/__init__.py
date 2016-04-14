@@ -8,53 +8,68 @@ import codecs
 import re
 
 import six
-import yaml
 
+import yaml
 try:
     from yaml import CSafeDumper as SafeDumper
 except ImportError:
     from yaml import SafeDumper
 
 from .util import u
+from .handlers import YAMLHandler, JSONHandler, TOMLHandler
+
 
 __all__ = ['parse', 'load', 'loads', 'dump', 'dumps']
 
-# match three or more dashes
-# split on this
-FM_BOUNDARY = re.compile(r'^-{3,}$', re.MULTILINE)
-
 POST_TEMPLATE = """\
----
+{start_delimiter}
 {metadata}
----
+{end_delimiter}
 
 {content}
 """
 
+# global handlers
+handlers = {
+    '---': YAMLHandler(),
+    '{': JSONHandler(),
+}
+
+# if toml is installed
+if TOMLHandler is not None:
+    handlers['+++'] = TOMLHandler()
+
 
 def parse(text, **defaults):
     """
-    Parse text with YAML frontmatter, return metadata and content.
+    Parse text with frontmatter, return metadata and content.
     Pass in optional metadata defaults as keyword args.
 
     If frontmatter is not found, returns an empty metadata dictionary
-    and original text content.
+    (or defaults) and original text content.
     """
     # ensure unicode first
-    text = u(text)
+    text = u(text).strip()
 
     # metadata starts with defaults
     metadata = defaults.copy()
 
-    # split on the first two triple-dashes
+    for delim in handlers:
+        if text.startswith(delim):
+            handler = handlers[delim]
+            break
+    else:
+        return metadata, text
+
+    # split on the delimiters
     try:
-        _, fm, content = FM_BOUNDARY.split(text, 2)
+        fm, content = handler.split(text)
     except ValueError:
         # if we can't split, bail
         return metadata, text
 
-    # parse yaml, now that we have frontmatter
-    fm = yaml.safe_load(fm)
+    # parse, now that we have frontmatter
+    fm = handler.load(fm)
     if isinstance(fm, dict):
         metadata.update(fm)
 
@@ -102,15 +117,28 @@ def dumps(post, **kwargs):
     """
     kwargs.setdefault('Dumper', SafeDumper)
     kwargs.setdefault('default_flow_style', False)
+    
+    start_delimiter = '---'
+    if 'start_delimiter' in kwargs:
+        start_delimiter = kwargs['start_delimiter']
+        del kwargs['start_delimiter']
+    
+    end_delimiter = '---'
+    if 'end_delimiter' in kwargs:
+        end_delimiter = kwargs['end_delimiter']
+        del kwargs['end_delimiter']
 
     metadata = yaml.dump(post.metadata, **kwargs).strip()
     metadata = u(metadata) # ensure unicode
-    return POST_TEMPLATE.format(metadata=metadata, content=post.content).strip()
+    return POST_TEMPLATE.format(
+        metadata=metadata, content=post.content,
+        start_delimiter=start_delimiter,
+        end_delimiter=end_delimiter).strip()
 
 
 class Post(object):
     """
-    A post contains content and metadata from YAML Front Matter.
+    A post contains content and metadata from Front Matter.
     For convenience, metadata values are available as proxied item lookups. 
 
     Don't use this class directly. Use module-level functions load, dump, etc.
@@ -118,7 +146,7 @@ class Post(object):
     def __init__(self, content, **metadata):
         self.content = u(content)
         self.metadata = metadata
-    
+
     def __getitem__(self, name):
         "Get metadata key"
         return self.metadata[name]        
