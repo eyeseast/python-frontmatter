@@ -121,8 +121,6 @@ Or write to a file (or file-like object):
    :maxdepth: 2
 
    api
-   handlers
-
 
 
 Indices and tables
