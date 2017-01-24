@@ -132,10 +132,12 @@ def dumps(post, **kwargs):
 
 class Post(object):
     """
-    A post contains content and metadata from Front Matter.
-    For convenience, metadata values are available as proxied item lookups. 
+    A post contains content and metadata from Front Matter. This is what gets
+    returned by :py:func:`load <frontmatter.load>` and :py:func:`loads <frontmatter.loads>`. 
+    Passing this to :py:func:`dump <frontmatter.dump>` or :py:func:`dumps <frontmatter.dumps>` 
+    will turn it back into text.
 
-    Don't use this class directly. Use module-level functions load, dump, etc.
+    For convenience, metadata values are available as proxied item lookups. 
     """
     def __init__(self, content, **metadata):
         self.content = u(content)
