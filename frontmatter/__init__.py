@@ -40,16 +40,24 @@ if TOMLHandler is not None:
     handlers['+++'] = TOMLHandler()
 
 
-def parse(text, **defaults):
+def parse(text, encoding='utf-8', **defaults):
     """
     Parse text with frontmatter, return metadata and content.
     Pass in optional metadata defaults as keyword args.
 
     If frontmatter is not found, returns an empty metadata dictionary
     (or defaults) and original text content.
+
+    ::
+
+        >>> with open('tests/hello-world.markdown') as f:
+        ...     metadata, content = frontmatter.parse(f.read())
+        >>> print(metadata['title'])
+        Hello, world!
+
     """
     # ensure unicode first
-    text = u(text).strip()
+    text = u(text, encoding).strip()
 
     # metadata starts with defaults
     metadata = defaults.copy()
@@ -76,44 +84,86 @@ def parse(text, **defaults):
     return metadata, content.strip()
 
 
-def load(fd, **defaults):
+def load(fd, encoding='utf-8', **defaults):
     """
-    Load and parse a file or filename, return a post.
+    Load and parse a file-like object or filename, 
+    return a :py:class:`post <frontmatter.Post>`.
+
+    ::
+
+        >>> post = frontmatter.load('tests/hello-world.markdown')
+        >>> with open('tests/hello-world.markdown') as f:
+        ...     post = frontmatter.load(f)
+
     """
     if hasattr(fd, 'read'):
         text = fd.read()
 
     else:
-        with codecs.open(fd, 'r', 'utf-8') as f:
+        with codecs.open(fd, 'r', encoding) as f:
             text = f.read()
 
-    return loads(text, **defaults)
+    return loads(text, encoding, **defaults)
 
 
-def loads(text, **defaults):
+def loads(text, encoding='utf-8', **defaults):
     """
-    Parse text and return a post.
+    Parse text (binary or unicode) and return a :py:class:`post <frontmatter.Post>`.
+
+    ::
+
+        >>> with open('tests/hello-world.markdown') as f:
+        ...     post = frontmatter.loads(f.read())
+
     """
-    metadata, content = parse(text, **defaults)
+    metadata, content = parse(text, encoding, **defaults)
     return Post(content, **metadata)
 
 
-def dump(post, fd, **kwargs):
+def dump(post, fd, encoding='utf-8', **kwargs):
     """
-    Serialize post to a string and dump to a file-like object.
+    Serialize :py:class:`post <frontmatter.Post>` to a string and write to a file-like object.
+    Text will be encoded on the way out (utf-8 by default).
+
+    ::
+
+        >>> from io import StringIO
+        >>> f = StringIO()
+        >>> frontmatter.dump(post, f)
+        >>> print(f.getvalue())
+        ---
+        excerpt: tl;dr
+        layout: post
+        title: Hello, world!
+        ---
+        Well, hello there, world.
+
+
     """
-    content = dumps(post, **kwargs)
+    content = dumps(post, **kwargs).encode(encoding)
     if hasattr(fd, 'write'):
         fd.write(content)
 
     else:
-        with codecs.open(fd, 'w', 'utf-8') as f:
+        with codecs.open(fd, 'w', encoding) as f:
             f.write(content)
 
 
 def dumps(post, **kwargs):
     """
-    Serialize post to a string and return text.
+    Serialize a :py:class:`post <frontmatter.Post>` to a string and return text. 
+    This always returns unicode text, which can then be encoded.
+
+    ::
+
+        >>> print(frontmatter.dumps(post))
+        ---
+        excerpt: tl;dr
+        layout: post
+        title: Hello, world!
+        ---
+        Well, hello there, world.
+
     """
     kwargs.setdefault('Dumper', SafeDumper)
     kwargs.setdefault('default_flow_style', False)

@@ -44,7 +44,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_unicode_post(self):
         "Ensure unicode is parsed correctly"
-        chinese = frontmatter.load('tests/chinese.txt')
+        chinese = frontmatter.load('tests/chinese.txt', 'utf-8')
 
         self.assertTrue(isinstance(chinese.content, six.text_type))
 
@@ -107,7 +107,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_with_crlf_string(self):
         import codecs
         markdown_bytes = b'---\r\ntitle: "my title"\r\ncontent_type: "post"\r\npublished: no\r\n---\r\n\r\nwrite your content in markdown here'
-        loaded = frontmatter.loads(codecs.decode(markdown_bytes, 'utf-8'))
+        loaded = frontmatter.loads(markdown_bytes, 'utf-8')
         self.assertEqual(loaded['title'], 'my title')
 
     def test_dumping_with_custom_delimiters(self):
