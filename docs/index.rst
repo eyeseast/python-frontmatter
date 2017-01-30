@@ -120,6 +120,7 @@ Or write to a file (or file-like object):
 .. toctree::
    :maxdepth: 2
 
+   handlers
    api
 
 

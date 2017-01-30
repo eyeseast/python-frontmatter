@@ -27,3 +27,7 @@ Post objects
 .. autoclass:: frontmatter.Post
     :members:
     :special-members: __getitem__, __setitem__, __delitem__
+
+
+Handlers
+--------

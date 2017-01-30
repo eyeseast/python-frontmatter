@@ -31,16 +31,31 @@ POST_TEMPLATE = """\
 
 # global handlers
 handlers = {
-    '---': YAMLHandler(),
-    '{': JSONHandler(),
+    Handler.FM_BOUNDARY: Handler() 
+    for Handler in [YAMLHandler, JSONHandler, TOMLHandler]
+    if Handler is not None
 }
 
-# if toml is installed
-if TOMLHandler is not None:
-    handlers['+++'] = TOMLHandler()
+
+def detect_format(text, handlers):
+    """
+    Figure out which handler to use, based on metadata.
+    Returns a handler instance or None.
+
+    ``text`` should be unicode text about to be parsed.
+
+    ``handlers`` is a dictionary where keys are opening delimiters 
+    and values are handler instances.
+    """
+    for pattern, handler in handlers.items():
+        if pattern.match(text):
+            return handler
+
+    # nothing matched, give nothing back
+    return None
 
 
-def parse(text, encoding='utf-8', **defaults):
+def parse(text, encoding='utf-8', handler=None, **defaults):
     """
     Parse text with frontmatter, return metadata and content.
     Pass in optional metadata defaults as keyword args.
@@ -62,11 +77,9 @@ def parse(text, encoding='utf-8', **defaults):
     # metadata starts with defaults
     metadata = defaults.copy()
 
-    for delim in handlers:
-        if text.startswith(delim):
-            handler = handlers[delim]
-            break
-    else:
+    # this will only run if a handler hasn't been set higher up
+    handler = handler or detect_format(text, handlers)
+    if handler is None:
         return metadata, text
 
     # split on the delimiters
@@ -84,7 +97,7 @@ def parse(text, encoding='utf-8', **defaults):
     return metadata, content.strip()
 
 
-def load(fd, encoding='utf-8', **defaults):
+def load(fd, encoding='utf-8', handler=None, **defaults):
     """
     Load and parse a file-like object or filename, 
     return a :py:class:`post <frontmatter.Post>`.
@@ -103,10 +116,11 @@ def load(fd, encoding='utf-8', **defaults):
         with codecs.open(fd, 'r', encoding) as f:
             text = f.read()
 
-    return loads(text, encoding, **defaults)
+    handler = handler or detect_format(text, handlers)
+    return loads(text, encoding, handler, **defaults)
 
 
-def loads(text, encoding='utf-8', **defaults):
+def loads(text, encoding='utf-8', handler=None, **defaults):
     """
     Parse text (binary or unicode) and return a :py:class:`post <frontmatter.Post>`.
 
@@ -116,11 +130,12 @@ def loads(text, encoding='utf-8', **defaults):
         ...     post = frontmatter.loads(f.read())
 
     """
-    metadata, content = parse(text, encoding, **defaults)
-    return Post(content, **metadata)
+    handler = handler or detect_format(text, handlers)
+    metadata, content = parse(text, encoding, handler, **defaults)
+    return Post(content, handler, **metadata)
 
 
-def dump(post, fd, encoding='utf-8', **kwargs):
+def dump(post, fd, encoding='utf-8', handler=None, **kwargs):
     """
     Serialize :py:class:`post <frontmatter.Post>` to a string and write to a file-like object.
     Text will be encoded on the way out (utf-8 by default).
@@ -140,7 +155,7 @@ def dump(post, fd, encoding='utf-8', **kwargs):
 
 
     """
-    content = dumps(post, **kwargs).encode(encoding)
+    content = dumps(post, handler, **kwargs).encode(encoding)
     if hasattr(fd, 'write'):
         fd.write(content)
 
@@ -149,11 +164,15 @@ def dump(post, fd, encoding='utf-8', **kwargs):
             f.write(content)
 
 
-def dumps(post, **kwargs):
+def dumps(post, handler=None, **kwargs):
     """
     Serialize a :py:class:`post <frontmatter.Post>` to a string and return text. 
     This always returns unicode text, which can then be encoded.
 
+    Passing ``handler`` will change how metadata is turned into text. A handler
+    passed as an argument will override ``post.handler``, with 
+    :py:class:`YAMLHandler <frontmatter.default_handlers.YAMLHandler>` used as 
+    a default.
     ::
 
         >>> print(frontmatter.dumps(post))
@@ -189,9 +208,10 @@ class Post(object):
 
     For convenience, metadata values are available as proxied item lookups. 
     """
-    def __init__(self, content, **metadata):
+    def __init__(self, content, handler=None, **metadata):
         self.content = u(content)
         self.metadata = metadata
+        self.handler = handler
 
     def __getitem__(self, name):
         "Get metadata key"

@@ -7,11 +7,13 @@ import doctest
 import glob
 import json
 import sys
+import textwrap
 import unittest
 
 import six
 
 import frontmatter
+from frontmatter.default_handlers import YAMLHandler, JSONHandler, TOMLHandler 
 
 try:
     import pyaml
@@ -119,6 +121,52 @@ class FrontmatterTest(unittest.TestCase):
         
         self.assertTrue('+++' in dump)
 
+
+class HandlerTest(unittest.TestCase):
+    """
+    Tests for custom handlers and formatting
+    """
+    def test_detect_format(self):
+        "detect format based on default handlers"
+        test_files = {
+            'tests/hello-world.markdown': YAMLHandler, 
+            'tests/hello-json.markdown': JSONHandler,
+            'tests/hello-toml.markdown': TOMLHandler
+        }
+
+        for fn, Handler in test_files.items():
+            with codecs.open(fn, 'r', 'utf-8') as f:
+                format = frontmatter.detect_format(f.read(), frontmatter.handlers)
+                self.assertIsInstance(format, Handler)
+
+
+    def test_custom_handler(self):
+        "allow caller to specify a custom delimiter/handler"
+
+        # not including this in the regular test directory
+        # because it would/should be invalid per the defaults
+        custom = textwrap.dedent("""
+        ...
+        dummy frontmatter
+        ...
+        dummy content
+        """)
+
+        # and a custom handler that really doesn't do anything
+        class DummyHandler(object):
+            def load(self, fm):
+                return {'value': fm}
+
+            def split(self, text):
+                return "dummy frontmatter", "dummy content"
+
+        # but we tell frontmatter that it is the appropriate handler
+        # for the '...' delimiter
+        # frontmatter.handlers['...'] = DummyHandler()
+        post = frontmatter.loads(custom, handler=DummyHandler())
+
+        self.assertEqual(post['value'], 'dummy frontmatter')
+
     def test_toml(self):
         "load toml frontmatter"
         if toml is None:
@@ -135,32 +183,9 @@ class FrontmatterTest(unittest.TestCase):
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
 
-    def test_custom_handler(self):
-        "allow caller to specify a custom delimiter/handler"
-
-        # not including this in the regular test directory
-        # because it would/should be invalid per the defaults
-        custom = """...
-dummy frontmatter
-...
-dummy content"""
-
-        # and a custom handler that really doesn't do anything
-        class DummyHandler(object):
-            def load(self, fm):
-                return {'value': fm}
-
-            def split(self, text):
-                return "dummy frontmatter", "dummy content"
-
-        # but we tell frontmatter that it is the appropriate handler
-        # for the '...' delimiter
-        frontmatter.handlers['...'] = DummyHandler()
-        post = frontmatter.loads(custom)
-
-        self.assertEqual(post['value'], 'dummy frontmatter')
-
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
+    doctest.testmod(frontmatter, extraglobs={'frontmatter': frontmatter})
+    doctest.testmod(frontmatter.default_handlers, extraglobs={'frontmatter': frontmatter})
     unittest.main()
