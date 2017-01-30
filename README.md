@@ -76,10 +76,10 @@ Write back to plain text, too:
 
 Or write to a file (or file-like object):
 
-    >>> from io import StringIO
-    >>> f = StringIO()
+    >>> from io import BytesIO
+    >>> f = BytesIO()
     >>> frontmatter.dump(post, f)
-    >>> print(f.getvalue()) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(f.getvalue().decode('utf-8')) # doctest: +NORMALIZE_WHITESPACE
     ---
     excerpt: tl;dr
     layout: post
