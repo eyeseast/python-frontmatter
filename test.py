@@ -186,6 +186,5 @@ class HandlerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
-    doctest.testmod(frontmatter, extraglobs={'frontmatter': frontmatter})
     doctest.testmod(frontmatter.default_handlers, extraglobs={'frontmatter': frontmatter})
     unittest.main()
