@@ -9,12 +9,6 @@ import re
 
 import six
 
-import yaml
-try:
-    from yaml import CSafeDumper as SafeDumper
-except ImportError:
-    from yaml import SafeDumper
-
 from .util import u
 from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
 
@@ -184,14 +178,13 @@ def dumps(post, handler=None, **kwargs):
         Well, hello there, world.
 
     """
-    kwargs.setdefault('Dumper', SafeDumper)
-    kwargs.setdefault('default_flow_style', False)
-    
-    start_delimiter = kwargs.pop('start_delimiter', '---')
-    end_delimiter = kwargs.pop('end_delimiter', '---')
+    if handler is None:
+        handler = post.handler or YAMLHandler()
 
-    metadata = yaml.dump(post.metadata, **kwargs).strip()
-    metadata = u(metadata) # ensure unicode
+    start_delimiter = kwargs.pop('start_delimiter', handler.START_DELIMITER)
+    end_delimiter = kwargs.pop('end_delimiter', handler.END_DELIMITER)
+
+    metadata = handler.export(post.metadata, **kwargs)
 
     return POST_TEMPLATE.format(
         metadata=metadata, content=post.content,

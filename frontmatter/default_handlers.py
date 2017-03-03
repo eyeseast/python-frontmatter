@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 By default, ``frontmatter`` reads and writes YAML metadata. But maybe
 you don't like YAML. Maybe enjoy writing metadata in JSON, or TOML, or
@@ -41,8 +42,8 @@ on the post will use the attached handler.
     >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
     +++
     test = "tester"
-    author = "bob"
     something = "else"
+    author = "bob"
     +++
     <BLANKLINE>
     Title
@@ -65,9 +66,9 @@ Passing a new handler to :py:func:`frontmatter.dumps <frontmatter.dumps>`
 
     >>> print(frontmatter.dumps(post, handler=YAMLHandler())) # doctest: +NORMALIZE_WHITESPACE
     ---
-    test: tester
     author: bob
     something: else
+    test: tester
     ---
     <BLANKLINE>
     Title
@@ -109,11 +110,17 @@ from __future__ import unicode_literals
 import json
 import re
 import yaml
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    from yaml import SafeDumper
 
 try:
     import toml
 except ImportError:
     toml = None
+
+from .util import u
 
 
 __all__ = ['BaseHandler', 'YAMLHandler', 'JSONHandler']
@@ -125,9 +132,13 @@ if toml:
 class BaseHandler(object):
 
     FM_BOUNDARY = None
+    START_DELIMITER = None
+    END_DELIMITER = None
 
-    def __init__(self, fm_boundary=None):
+    def __init__(self, fm_boundary=None, start_delimiter=None, end_delimiter=None):
         self.FM_BOUNDARY = fm_boundary or self.FM_BOUNDARY
+        self.START_DELIMITER = start_delimiter or self.START_DELIMITER
+        self.END_DELIMITER = end_delimiter or self.END_DELIMITER
 
         if self.FM_BOUNDARY is None:
             raise NotImplementedError('No frontmatter boundary defined. '
@@ -143,12 +154,6 @@ class BaseHandler(object):
         """
         raise NotImplementedError
 
-    def load(self, fm):
-        """
-        Parse frontmatter and return a dict
-        """
-        raise NotImplementedError
-
     def split(self, text):
         """
         Split text into frontmatter and content
@@ -156,31 +161,66 @@ class BaseHandler(object):
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return fm, content
 
+    def load(self, fm):
+        """
+        Parse frontmatter and return a dict
+        """
+        raise NotImplementedError
+
+    def export(self, metadata, **kwargs):
+        """
+        Turn metadata back into text
+        """
+        raise NotImplementedError
+
 
 class YAMLHandler(BaseHandler):
     FM_BOUNDARY = re.compile(r'^-{3,}$', re.MULTILINE)
+    START_DELIMITER = END_DELIMITER = "---"
 
     def load(self, fm, **kwargs):
         return yaml.safe_load(fm, **kwargs)
 
+    def export(self, metadata, **kwargs):
+        "Export metadata as YAML"
+
+        kwargs.setdefault('Dumper', SafeDumper)
+        kwargs.setdefault('default_flow_style', False)
+
+        metadata = yaml.dump(metadata, **kwargs).strip()
+        return u(metadata) # ensure unicode
+
 
 class JSONHandler(BaseHandler):
     FM_BOUNDARY = re.compile(r'^(?:{|})$', re.MULTILINE)
-
-    def load(self, fm, **kwargs):
-        return json.loads(fm, **kwargs)
+    START_DELIMITER = "{"
+    END_DELIMITER = "}"
 
     def split(self, text):
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return "{" + fm + "}", content
 
+    def load(self, fm, **kwargs):
+        return json.loads(fm, **kwargs)
+
+    def export(self, metadata, **kwargs):
+        "Turn metadata into JSON"
+        metadata = json.dumps(metadata, **kwargs)
+        return u(metadata)
+
 
 if toml:
     class TOMLHandler(BaseHandler):
         FM_BOUNDARY = re.compile(r'^\+{3,}$', re.MULTILINE)
+        START_DELIMITER = END_DELIMITER = "+++"
 
         def load(self, fm, **kwargs):
             return toml.loads(fm, **kwargs)
+
+        def export(self, metadata, **kwargs):
+            "Turn metadata into TOML"
+            metadata = toml.dumps(metadata)
+            return u(metadata)
 
 else:
     TOMLHandler = None
