@@ -124,6 +124,7 @@ def loads(text, encoding='utf-8', handler=None, **defaults):
         ...     post = frontmatter.loads(f.read())
 
     """
+    text = u(text, encoding)
     handler = handler or detect_format(text, handlers)
     metadata, content = parse(text, encoding, handler, **defaults)
     return Post(content, handler, **metadata)

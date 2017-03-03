@@ -39,7 +39,7 @@ on the post will use the attached handler.
     >>> post.handler #doctest: +ELLIPSIS
     <frontmatter.default_handlers.TOMLHandler object at 0x...>
 
-    >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(frontmatter.dumps(post)) # doctest: +SKIP
     +++
     test = "tester"
     something = "else"
