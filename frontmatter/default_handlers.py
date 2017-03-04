@@ -104,6 +104,13 @@ These three variations will produce the same export:
     >>> t1 == t2 == t3
     True
 
+All handlers use the interface defined on ``BaseHandler``. Each handler needs to know how to:
+
+- split metadata and content, based on a boundary pattern (``handler.split``)
+- parse plain text metadata into a Python dictionary (``handler.load``)
+- export a dictionary back into plain text (``handler.export``)
+
+
 """
 from __future__ import unicode_literals
 
@@ -112,8 +119,10 @@ import re
 import yaml
 try:
     from yaml import CSafeDumper as SafeDumper
+    from yaml import CSafeLoader as SafeLoader
 except ImportError:
     from yaml import SafeDumper
+    from yaml import SafeLoader
 
 try:
     import toml
@@ -130,6 +139,12 @@ if toml:
 
 
 class BaseHandler(object):
+    """
+    BaseHandler lays out all the steps to detecting, spliting, parsing and 
+    exporting front matter metadata.
+
+    All default handlers are subclassed from BaseHandler.
+    """
 
     FM_BOUNDARY = None
     START_DELIMITER = None
@@ -152,7 +167,9 @@ class BaseHandler(object):
         Note that this is *not* called when passing a handler instance to 
         :py:func:`frontmatter.load <frontmatter.load>` or :py:func:`loads <frontmatter.loads>`.
         """
-        raise NotImplementedError
+        if self.FM_BOUNDARY.match(text):
+            return True
+        return False
 
     def split(self, text):
         """
@@ -175,15 +192,24 @@ class BaseHandler(object):
 
 
 class YAMLHandler(BaseHandler):
+    """
+    Load and export YAML metadata. By default, this handler uses YAML's
+    "safe" mode, though it's possible to override that.
+    """
     FM_BOUNDARY = re.compile(r'^-{3,}$', re.MULTILINE)
     START_DELIMITER = END_DELIMITER = "---"
 
     def load(self, fm, **kwargs):
-        return yaml.safe_load(fm, **kwargs)
+        """
+        Parse YAML front matter. This uses yaml.SafeLoader by default. 
+        """
+        kwargs.setdefault('Loader', SafeLoader)
+        return yaml.load(fm, **kwargs)
 
     def export(self, metadata, **kwargs):
-        "Export metadata as YAML"
-
+        """
+        Export metadata as YAML. This uses yaml.SafeDumper by default.
+        """
         kwargs.setdefault('Dumper', SafeDumper)
         kwargs.setdefault('default_flow_style', False)
 
@@ -192,6 +218,11 @@ class YAMLHandler(BaseHandler):
 
 
 class JSONHandler(BaseHandler):
+    """
+    Load and export JSON metadata.
+
+    Note that changing ``START_DELIMITER`` or ``END_DELIMITER`` may break JSON parsing.
+    """
     FM_BOUNDARY = re.compile(r'^(?:{|})$', re.MULTILINE)
     START_DELIMITER = "{"
     END_DELIMITER = "}"
@@ -211,6 +242,11 @@ class JSONHandler(BaseHandler):
 
 if toml:
     class TOMLHandler(BaseHandler):
+        """
+        Load and export TOML metadata.
+
+        By default, split based on ``+++``.
+        """
         FM_BOUNDARY = re.compile(r'^\+{3,}$', re.MULTILINE)
         START_DELIMITER = END_DELIMITER = "+++"
 
