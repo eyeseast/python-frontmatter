@@ -139,6 +139,15 @@ class HandlerTest(unittest.TestCase):
                 format = frontmatter.detect_format(f.read(), frontmatter.handlers)
                 self.assertIsInstance(format, Handler)
 
+    def test_no_handler(self):
+        "default to YAMLHandler when no handler is attached"
+        post = frontmatter.load('tests/hello-world.markdown')
+        del post.handler
+
+        text = frontmatter.dumps(post)
+        self.assertIsInstance(
+            frontmatter.detect_format(text, frontmatter.handlers), 
+            YAMLHandler)
 
     def test_custom_handler(self):
         "allow caller to specify a custom delimiter/handler"
