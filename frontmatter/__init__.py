@@ -180,7 +180,7 @@ def dumps(post, handler=None, **kwargs):
 
     """
     if handler is None:
-        handler = post.handler or YAMLHandler()
+        handler = getattr(post, 'handler', None) or YAMLHandler()
 
     start_delimiter = kwargs.pop('start_delimiter', handler.START_DELIMITER)
     end_delimiter = kwargs.pop('end_delimiter', handler.END_DELIMITER)
