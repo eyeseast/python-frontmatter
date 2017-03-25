@@ -6,7 +6,10 @@ import codecs
 import doctest
 import glob
 import json
+import os
+import shutil
 import sys
+import tempfile
 import textwrap
 import unittest
 
@@ -120,6 +123,20 @@ class FrontmatterTest(unittest.TestCase):
             end_delimiter='+++')
         
         self.assertTrue('+++' in dump)
+
+    def test_dump_to_file(self):
+        "dump post to filename"
+        post = frontmatter.load('tests/hello-world.markdown')
+
+        tempdir = tempfile.mkdtemp()
+        filename = os.path.join(tempdir, 'hello.md')
+        frontmatter.dump(post, filename)
+
+        with open(filename) as f:
+            self.assertEqual(f.read(), frontmatter.dumps(post))
+
+        # cleanup
+        shutil.rmtree(tempdir)
 
 
 class HandlerTest(unittest.TestCase):

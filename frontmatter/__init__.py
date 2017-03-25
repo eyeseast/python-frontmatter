@@ -150,9 +150,9 @@ def dump(post, fd, encoding='utf-8', handler=None, **kwargs):
 
 
     """
-    content = dumps(post, handler, **kwargs).encode(encoding)
+    content = dumps(post, handler, **kwargs)
     if hasattr(fd, 'write'):
-        fd.write(content)
+        fd.write(content.encode(encoding))
 
     else:
         with codecs.open(fd, 'w', encoding) as f:
