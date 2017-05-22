@@ -137,8 +137,8 @@ def dump(post, fd, encoding='utf-8', handler=None, **kwargs):
 
     ::
 
-        >>> from io import StringIO
-        >>> f = StringIO()
+        >>> from io import BytesIO
+        >>> f = BytesIO()
         >>> frontmatter.dump(post, f)
         >>> print(f.getvalue())
         ---

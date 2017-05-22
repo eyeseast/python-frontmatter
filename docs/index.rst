@@ -105,8 +105,8 @@ Or write to a file (or file-like object):
 
 ::
 
-    >>> from io import StringIO
-    >>> f = StringIO()
+    >>> from io import BytesIO
+    >>> f = BytesIO()
     >>> frontmatter.dump(post, f)
     >>> print(f.getvalue())
     ---
