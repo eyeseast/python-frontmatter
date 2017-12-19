@@ -209,7 +209,11 @@ class Post(object):
 
     def __getitem__(self, name):
         "Get metadata key"
-        return self.metadata[name]        
+        return self.metadata[name]
+
+    def __contains__(self, item):
+        "Check metadata contains key"
+        return item in self.metadata
 
     def __setitem__(self, name, value):
         "Set a metadata key"
