@@ -213,7 +213,7 @@ class YAMLHandler(BaseHandler):
         kwargs.setdefault('Dumper', SafeDumper)
         kwargs.setdefault('default_flow_style', False)
 
-        metadata = yaml.dump(metadata, **kwargs).strip()
+        metadata = yaml.dump(metadata, allow_unicode=True, **kwargs).strip()
         return u(metadata) # ensure unicode
 
 
