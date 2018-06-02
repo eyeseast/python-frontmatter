@@ -140,7 +140,7 @@ if toml:
 
 class BaseHandler(object):
     """
-    BaseHandler lays out all the steps to detecting, spliting, parsing and 
+    BaseHandler lays out all the steps to detecting, splitting, parsing and 
     exporting front matter metadata.
 
     All default handlers are subclassed from BaseHandler.
