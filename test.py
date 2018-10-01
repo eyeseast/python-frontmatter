@@ -321,6 +321,33 @@ class HandlerBaseTest():
 
         self.assertEqual(fm_export, fm)
 
+class YAMLHandlerTest(HandlerBaseTest, unittest.TestCase):
+    def setUp(self):
+        self.handler = YAMLHandler()
+        self.data = {
+            'filename': 'tests/hello-markdown.markdown',
+            # TODO: YAMLHandler.split() is prepending '\n' to the content
+            'content' : '''\
+
+
+Title
+=====
+
+title2
+------
+
+Hello.
+
+Just need three dashes
+---
+
+And this shouldn't break.''',
+            'metadata': {
+                "test": "tester",
+                "author": "bob",
+                "something": "else",
+            },
+        }
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
