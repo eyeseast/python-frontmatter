@@ -349,6 +349,34 @@ And this shouldn't break.''',
             },
         }
 
+class JSONHandlerTest(HandlerBaseTest, unittest.TestCase):
+    def setUp(self):
+        self.handler = JSONHandler()
+        self.data = {
+            'filename': 'tests/hello-json.markdown',
+            # TODO: JSONHandler.split() is prepending '\n' to the content
+            'content' : '''\
+
+
+Title
+=====
+
+title2
+------
+
+Hello.
+
+Just need three dashes
+---
+
+And this might break.
+''',
+            'metadata': {
+                "test": "tester",
+                "author": "bob",
+                "something": "else",
+            },
+        }
 if __name__ == "__main__":
     doctest.testfile('README.md')
     doctest.testmod(frontmatter.default_handlers, extraglobs={'frontmatter': frontmatter})
