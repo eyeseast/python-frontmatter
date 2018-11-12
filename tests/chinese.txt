@@ -1,5 +1,6 @@
 ---
 title: "Let's try unicode"
+language: 中文
 ---
 
 欢迎来到大连水产学院！

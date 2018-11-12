@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from __future__ import unicode_literals
 from __future__ import print_function
 
@@ -50,8 +52,13 @@ class FrontmatterTest(unittest.TestCase):
     def test_unicode_post(self):
         "Ensure unicode is parsed correctly"
         chinese = frontmatter.load('tests/chinese.txt', 'utf-8')
+        output = frontmatter.dumps(chinese)
+        zh = "中文"
 
         self.assertTrue(isinstance(chinese.content, six.text_type))
+
+        # check that we're dumping out unicode metadata, too
+        self.assertTrue(zh in output)
 
         # this shouldn't work as ascii, because it's Hanzi
         self.assertRaises(UnicodeEncodeError, chinese.content.encode, 'ascii')
