@@ -225,8 +225,8 @@ class JSONHandler(BaseHandler):
     Note that changing ``START_DELIMITER`` or ``END_DELIMITER`` may break JSON parsing.
     """
     FM_BOUNDARY = re.compile(r'^(?:{|})$', re.MULTILINE)
-    START_DELIMITER = "{"
-    END_DELIMITER = "}"
+    START_DELIMITER = ""
+    END_DELIMITER = ""
 
     def split(self, text):
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
@@ -237,6 +237,7 @@ class JSONHandler(BaseHandler):
 
     def export(self, metadata, **kwargs):
         "Turn metadata into JSON"
+        kwargs.setdefault('indent', 4)
         metadata = json.dumps(metadata, **kwargs)
         return u(metadata)
 
