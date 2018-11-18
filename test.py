@@ -150,18 +150,37 @@ class HandlerTest(unittest.TestCase):
     """
     Tests for custom handlers and formatting
     """
+    TEST_FILES = {
+        'tests/hello-world.markdown': YAMLHandler, 
+        'tests/hello-json.markdown': JSONHandler,
+        'tests/hello-toml.markdown': TOMLHandler
+    }
+
+    def sanity_check(self, filename, handler_type):
+        "Ensure we can load -> dump -> load"
+        post = frontmatter.load(filename)
+
+        self.assertIsInstance(post.handler, handler_type)
+
+        # dump and reload
+        repost = frontmatter.loads(frontmatter.dumps(post))
+
+        self.assertEqual(post.metadata, repost.metadata)
+        self.assertEqual(post.content, repost.content)
+        self.assertEqual(post.handler, repost.handler)
+
     def test_detect_format(self):
         "detect format based on default handlers"
-        test_files = {
-            'tests/hello-world.markdown': YAMLHandler, 
-            'tests/hello-json.markdown': JSONHandler,
-            'tests/hello-toml.markdown': TOMLHandler
-        }
 
-        for fn, Handler in test_files.items():
-            with codecs.open(fn, 'r', 'utf-8') as f:
+        for filename, Handler in self.TEST_FILES.items():
+            with codecs.open(filename, 'r', 'utf-8') as f:
                 format = frontmatter.detect_format(f.read(), frontmatter.handlers)
                 self.assertIsInstance(format, Handler)
+
+    def test_sanity_all(self):
+        "Run sanity check on all handlers"
+        for filename, Handler in self.TEST_FILES.items():
+            self.sanity_check(filename, Handler)
 
     def test_no_handler(self):
         "default to YAMLHandler when no handler is attached"
@@ -215,6 +234,10 @@ class HandlerTest(unittest.TestCase):
         metadata = {'author': 'bob', 'something': 'else', 'test': 'tester'}
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
+
+
+    def test_json_output(self):
+        "load, export, and reload"
 
 
 if __name__ == "__main__":
