@@ -236,10 +236,6 @@ class HandlerTest(unittest.TestCase):
             self.assertEqual(post[k], v)
 
 
-    def test_json_output(self):
-        "load, export, and reload"
-
-
 class HandlerBaseTest():
     """
     Tests for frontmatter.handlers
