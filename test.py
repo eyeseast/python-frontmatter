@@ -236,9 +236,172 @@ class HandlerTest(unittest.TestCase):
             self.assertEqual(post[k], v)
 
 
-    def test_json_output(self):
-        "load, export, and reload"
+class HandlerBaseTest():
+    """
+    Tests for frontmatter.handlers
+    """
 
+    def setUp(self):
+        """
+        This method should be overridden to initalize the TestCase
+        """
+        self.handler = None
+        self.data = {
+            'filename': "tests/hello-world.markdown",
+            'content' : '''\
+''',
+            'metadata': {
+            },
+        }
+
+    def read_from_tests(self):
+        with open(self.data['filename']) as fil:
+            return fil.read()
+
+    def test_external(self):
+        filename = self.data['filename']
+        content = self.data['content']
+        metadata = self.data['metadata']
+        content_stripped = content.strip()
+
+        post = frontmatter.load(filename)
+
+        self.assertEqual(post.content, content_stripped)
+        for k, v in metadata.items():
+            self.assertEqual(post[k], v)
+
+        # dumps and then loads to ensure round trip conversions.
+        posttext = frontmatter.dumps(post, handler=self.handler)
+        post_2 = frontmatter.loads(posttext)
+
+        for k in post.metadata:
+            self.assertEqual(post.metadata[k], post_2.metadata[k])
+
+        self.assertEqual(post.content, post_2.content)
+
+    def test_detect(self):
+        text = self.read_from_tests()
+
+        self.assertTrue(self.handler.detect(text))
+
+    def test_split_content(self):
+        text = self.read_from_tests()
+
+        fm, content = self.handler.split(text)
+
+        self.assertEqual(content, self.data['content'])
+
+    def test_split_load(self):
+        text = self.read_from_tests()
+        fm, content = self.handler.split(text)
+        fm_load = self.handler.load(fm)
+
+        # The format of the failmsg makes it easy to copy into the test.
+        any_fail = False
+        failmsg = 'The following metadata did not match the test:'
+        for k in self.data['metadata']:
+            if(fm_load[k] == self.data['metadata'][k]):
+                continue
+            any_fail = True
+            failmsg += '\n"{0}": {1},'.format(k, repr(fm_load[k]))
+
+        if any_fail:
+            self.fail(failmsg)
+
+    @unittest.skip("metadata can be reordered")
+    def test_split_export(self):
+        text = self.read_from_tests()
+        fm, content = self.handler.split(text)
+
+        fm_export = self.handler.export(self.data['metadata'])
+
+        self.assertEqual(fm_export, fm)
+
+class YAMLHandlerTest(HandlerBaseTest, unittest.TestCase):
+    def setUp(self):
+        self.handler = YAMLHandler()
+        self.data = {
+            'filename': 'tests/hello-markdown.markdown',
+            # TODO: YAMLHandler.split() is prepending '\n' to the content
+            'content' : '''\
+
+
+Title
+=====
+
+title2
+------
+
+Hello.
+
+Just need three dashes
+---
+
+And this shouldn't break.''',
+            'metadata': {
+                "test": "tester",
+                "author": "bob",
+                "something": "else",
+            },
+        }
+
+class JSONHandlerTest(HandlerBaseTest, unittest.TestCase):
+    def setUp(self):
+        self.handler = JSONHandler()
+        self.data = {
+            'filename': 'tests/hello-json.markdown',
+            # TODO: JSONHandler.split() is prepending '\n' to the content
+            'content' : '''\
+
+
+Title
+=====
+
+title2
+------
+
+Hello.
+
+Just need three dashes
+---
+
+And this might break.
+''',
+            'metadata': {
+                "test": "tester",
+                "author": "bob",
+                "something": "else",
+            },
+        }
+
+class TOMLHandlerTest(HandlerBaseTest, unittest.TestCase):
+    def setUp(self):
+        self.handler = TOMLHandler()
+        self.data = {
+            'filename': 'tests/hello-toml.markdown',
+            # TODO: TOMLHandler.split() is prepending '\n' to the content
+            'content' : '''\
+
+
+Title
+=====
+
+title2
+------
+
+Hello.
+
+Just need three dashes
+---
+
+And this shouldn't break.
+''',
+            'metadata': {
+                "test": "tester",
+                "author": "bob",
+                "something": "else",
+            },
+        }
 
 if __name__ == "__main__":
     doctest.testfile('README.md')
