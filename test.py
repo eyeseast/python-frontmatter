@@ -80,6 +80,17 @@ class FrontmatterTest(unittest.TestCase):
         self.assertEqual(post.metadata, {})
         self.assertEqual(post.content, content)
 
+    def test_extra_space(self):
+        "Extra space in frontmatter delimiter"
+        post = frontmatter.load('tests/extra-space.txt')
+        content = six.text_type("This file has an extra space on the opening line of the frontmatter.")
+
+        self.assertEqual(post.content, content)
+        metadata = {'something': 'else', 'test': 'tester'}
+        for k, v in metadata.items():
+            self.assertEqual(post[k], v)
+
+
     def test_to_dict(self):
         "Dump a post as a dict, for serializing"
         post = frontmatter.load('tests/network-diagrams.markdown')
@@ -325,7 +336,6 @@ class YAMLHandlerTest(HandlerBaseTest, unittest.TestCase):
             # TODO: YAMLHandler.split() is prepending '\n' to the content
             'content' : '''\
 
-
 Title
 =====
 
@@ -381,7 +391,6 @@ class TOMLHandlerTest(HandlerBaseTest, unittest.TestCase):
             'filename': 'tests/hello-toml.markdown',
             # TODO: TOMLHandler.split() is prepending '\n' to the content
             'content' : '''\
-
 
 Title
 =====
