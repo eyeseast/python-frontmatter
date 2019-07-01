@@ -117,6 +117,7 @@ from __future__ import unicode_literals
 import json
 import re
 import yaml
+
 try:
     from yaml import CSafeDumper as SafeDumper
     from yaml import CSafeLoader as SafeLoader
@@ -132,10 +133,10 @@ except ImportError:
 from .util import u
 
 
-__all__ = ['BaseHandler', 'YAMLHandler', 'JSONHandler']
+__all__ = ["BaseHandler", "YAMLHandler", "JSONHandler"]
 
 if toml:
-    __all__.append('TOMLHandler')
+    __all__.append("TOMLHandler")
 
 
 class BaseHandler(object):
@@ -156,8 +157,12 @@ class BaseHandler(object):
         self.END_DELIMITER = end_delimiter or self.END_DELIMITER
 
         if self.FM_BOUNDARY is None:
-            raise NotImplementedError('No frontmatter boundary defined. '
-                'Please set {}.FM_BOUNDARY to a regular expression'.format(self.__class__.__name__))
+            raise NotImplementedError(
+                "No frontmatter boundary defined. "
+                "Please set {}.FM_BOUNDARY to a regular expression".format(
+                    self.__class__.__name__
+                )
+            )
 
     def detect(self, text):
         """
@@ -196,26 +201,27 @@ class YAMLHandler(BaseHandler):
     Load and export YAML metadata. By default, this handler uses YAML's
     "safe" mode, though it's possible to override that.
     """
-    FM_BOUNDARY = re.compile(r'^-{3,}\s*$', re.MULTILINE)
+
+    FM_BOUNDARY = re.compile(r"^-{3,}\s*$", re.MULTILINE)
     START_DELIMITER = END_DELIMITER = "---"
 
     def load(self, fm, **kwargs):
         """
         Parse YAML front matter. This uses yaml.SafeLoader by default. 
         """
-        kwargs.setdefault('Loader', SafeLoader)
+        kwargs.setdefault("Loader", SafeLoader)
         return yaml.load(fm, **kwargs)
 
     def export(self, metadata, **kwargs):
         """
         Export metadata as YAML. This uses yaml.SafeDumper by default.
         """
-        kwargs.setdefault('Dumper', SafeDumper)
-        kwargs.setdefault('default_flow_style', False)
-        kwargs.setdefault('allow_unicode', True)
+        kwargs.setdefault("Dumper", SafeDumper)
+        kwargs.setdefault("default_flow_style", False)
+        kwargs.setdefault("allow_unicode", True)
 
         metadata = yaml.dump(metadata, **kwargs).strip()
-        return u(metadata) # ensure unicode
+        return u(metadata)  # ensure unicode
 
 
 class JSONHandler(BaseHandler):
@@ -224,7 +230,8 @@ class JSONHandler(BaseHandler):
 
     Note that changing ``START_DELIMITER`` or ``END_DELIMITER`` may break JSON parsing.
     """
-    FM_BOUNDARY = re.compile(r'^(?:{|})$', re.MULTILINE)
+
+    FM_BOUNDARY = re.compile(r"^(?:{|})$", re.MULTILINE)
     START_DELIMITER = ""
     END_DELIMITER = ""
 
@@ -237,19 +244,21 @@ class JSONHandler(BaseHandler):
 
     def export(self, metadata, **kwargs):
         "Turn metadata into JSON"
-        kwargs.setdefault('indent', 4)
+        kwargs.setdefault("indent", 4)
         metadata = json.dumps(metadata, **kwargs)
         return u(metadata)
 
 
 if toml:
+
     class TOMLHandler(BaseHandler):
         """
         Load and export TOML metadata.
 
         By default, split based on ``+++``.
         """
-        FM_BOUNDARY = re.compile(r'^\+{3,}\s*$', re.MULTILINE)
+
+        FM_BOUNDARY = re.compile(r"^\+{3,}\s*$", re.MULTILINE)
         START_DELIMITER = END_DELIMITER = "+++"
 
         def load(self, fm, **kwargs):
@@ -259,6 +268,7 @@ if toml:
             "Turn metadata into TOML"
             metadata = toml.dumps(metadata)
             return u(metadata)
+
 
 else:
     TOMLHandler = None
