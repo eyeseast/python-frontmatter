@@ -196,7 +196,7 @@ class YAMLHandler(BaseHandler):
     Load and export YAML metadata. By default, this handler uses YAML's
     "safe" mode, though it's possible to override that.
     """
-    FM_BOUNDARY = re.compile(r'^-{3,}$', re.MULTILINE)
+    FM_BOUNDARY = re.compile(r'^-{3,}\s*$', re.MULTILINE)
     START_DELIMITER = END_DELIMITER = "---"
 
     def load(self, fm, **kwargs):
@@ -249,7 +249,7 @@ if toml:
 
         By default, split based on ``+++``.
         """
-        FM_BOUNDARY = re.compile(r'^\+{3,}$', re.MULTILINE)
+        FM_BOUNDARY = re.compile(r'^\+{3,}\s*$', re.MULTILINE)
         START_DELIMITER = END_DELIMITER = "+++"
 
         def load(self, fm, **kwargs):
