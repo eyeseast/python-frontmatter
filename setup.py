@@ -7,45 +7,42 @@ except ImportError:
     from distutils.core import setup
 
 
-with open('README.md') as f:
+with open("README.md") as f:
     readme = f.read()
 
 
-requirements = [
-    'PyYAML',
-    'six'
-]
+requirements = ["PyYAML", "six"]
 
 
-VERSION = '0.4.5'
+VERSION = "0.4.5"
 
 
 setup(
-    name = 'python-frontmatter',
-    version = VERSION,
-    description = 'Parse and manage posts with YAML frontmatter',
-    long_description = readme,
-    author = 'Chris Amico',
-    author_email = 'eyeseast@gmail.com',
-    url = 'https://github.com/eyeseast/python-frontmatter',
-    packages = ['frontmatter'],
-    include_package_data = True,
-    install_requires = requirements,
-    license = 'MIT',
-    zip_safe = False,
-    keywords = 'frontmatter',
+    name="python-frontmatter",
+    version=VERSION,
+    description="Parse and manage posts with YAML frontmatter",
+    long_description=readme,
+    author="Chris Amico",
+    author_email="eyeseast@gmail.com",
+    url="https://github.com/eyeseast/python-frontmatter",
+    packages=["frontmatter"],
+    include_package_data=True,
+    install_requires=requirements,
+    license="MIT",
+    zip_safe=False,
+    keywords="frontmatter",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
     ],
-    test_suite='test',
+    test_suite="test",
 )
