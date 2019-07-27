@@ -95,6 +95,8 @@ def check(fd, encoding="utf-8"):
     """
     Check if a file-like object or filename has a frontmatter, 
     return True if exists, False otherwise.
+    
+    If it contains a frontmatter but it is empty, return True as well.
 
     ::
 
@@ -116,6 +118,8 @@ def checks(text, encoding="utf-8"):
     """
     Check if a text (binary or unicode) has a frontmatter,
     return True if exists, False otherwise.
+    
+    If it contains a frontmatter but it is empty, return True as well.
 
     ::
 
