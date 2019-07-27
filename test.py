@@ -72,7 +72,7 @@ class FrontmatterTest(unittest.TestCase):
     
     def test_check_empty_frontmatter(self):
         "Checks if a file has a frontmatter (empty or not)"
-        ret = frontmatter.check("tests/no-frontmatter.txt")
+        ret = frontmatter.check("tests/empty-frontmatter.txt")
         
         self.assertEqual(ret, True)
 
