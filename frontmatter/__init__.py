@@ -91,6 +91,43 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
     return metadata, content.strip()
 
 
+def check(fd, encoding="utf-8"):
+    """
+    Check if a file-like object or filename has a frontmatter, 
+    return True if exists, False otherwise.
+
+    ::
+
+        >>> frontmatter.check('tests/hello-world.markdown')
+        True
+
+    """
+    if hasattr(fd, "read"):
+        text = fd.read()
+
+    else:
+        with codecs.open(fd, "r", encoding) as f:
+            text = f.read()
+
+    return checks(text, encoding)
+
+
+def checks(text, encoding="utf-8"):
+    """
+    Check if a text (binary or unicode) has a frontmatter,
+    return True if exists, False otherwise.
+
+    ::
+
+        >>> with open('tests/hello-world.markdown') as f:
+        ...     frontmatter.checks(f.read())
+        True
+
+    """
+    text = u(text, encoding)
+    return detect_format(text, handlers) != None
+
+
 def load(fd, encoding="utf-8", handler=None, **defaults):
     """
     Load and parse a file-like object or filename, 
