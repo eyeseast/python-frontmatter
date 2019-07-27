@@ -63,6 +63,18 @@ class FrontmatterTest(unittest.TestCase):
 
         # this shouldn't work as ascii, because it's Hanzi
         self.assertRaises(UnicodeEncodeError, chinese.content.encode, "ascii")
+    
+    def test_check_no_frontmatter(self):
+        "Checks if a file does not have a frontmatter"
+        ret = frontmatter.check("tests/no-frontmatter.txt")
+        
+        self.assertEqual(ret, False)
+    
+    def test_check_empty_frontmatter(self):
+        "Checks if a file has a frontmatter (empty or not)"
+        ret = frontmatter.check("tests/no-frontmatter.txt")
+        
+        self.assertEqual(ret, True)
 
     def test_no_frontmatter(self):
         "This is not a zen exercise."
