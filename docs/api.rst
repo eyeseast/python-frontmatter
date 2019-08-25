@@ -8,6 +8,10 @@ Reading
 
 .. autofunction:: frontmatter.parse
 
+.. autofunction:: frontmatter.check
+
+.. autofunction:: frontmatter.checks
+
 .. autofunction:: frontmatter.load
 
 .. autofunction:: frontmatter.loads
