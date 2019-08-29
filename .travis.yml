@@ -7,10 +7,9 @@ python:
   - "3.6"
   - "3.7"
 # command to install dependencies
-install: 
-# use pyaml for tests above py26
- - pip install -r requirements.txt
- - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then pip install pyaml; fi
- - "python setup.py install"
+install:
+  # use pyaml for tests above py26
+  - pip install -r requirements.txt
+  - "python setup.py install"
 # command to run tests
-script: python test.py
+script: python setup.py test
