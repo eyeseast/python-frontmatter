@@ -21,6 +21,7 @@ setup(
     version=VERSION,
     description="Parse and manage posts with YAML (or other) frontmatter",
     long_description=readme,
+    long_description_content_type="text/markdown",
     author="Chris Amico",
     author_email="eyeseast@gmail.com",
     url="https://github.com/eyeseast/python-frontmatter",
