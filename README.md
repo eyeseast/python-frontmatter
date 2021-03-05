@@ -16,75 +16,92 @@ Install:
 Usage:
 ------
 
-    >>> import frontmatter
+```python
+import frontmatter
+```
 
 Load a post from a filename:
 
-    >>> post = frontmatter.load('tests/hello-world.markdown')
+```python
+post = frontmatter.load('tests/hello-world.markdown')
+```
 
 Or a file (or file-like object):
 
-    >>> with open('tests/hello-world.markdown') as f:
-    ...     post = frontmatter.load(f)
+```python
+>>> with open('tests/hello-world.markdown') as f:
+...     post = frontmatter.load(f)
+```
 
 Or load from text:
 
-    >>> with open('tests/hello-world.markdown') as f:
-    ...     post = frontmatter.loads(f.read())
+```python
+>>> with open('tests/hello-world.markdown') as f:
+...     post = frontmatter.loads(f.read())
+```
 
 Access content:
 
-    >>> print(post.content)
-    Well, hello there, world.
+```python
+>>> print(post.content)
+Well, hello there, world.
 
-    # this works, too
-    >>> print(post)
-    Well, hello there, world.
-
+# this works, too
+>>> print(post)
+Well, hello there, world.
+```
 
 Use metadata (metadata gets proxied as post keys):
 
-    >>> print(post['title'])
-    Hello, world!
+```python
+>>> print(post['title'])
+Hello, world!
+```
 
 Metadata is a dictionary, with some handy proxies:
 
-    >>> sorted(post.keys())
-    ['layout', 'title']
+```python
+>>> sorted(post.keys())
+['layout', 'title']
 
-    >>> from pprint import pprint
-    >>> post['excerpt'] = 'tl;dr'
-    >>> pprint(post.metadata)
-    {'excerpt': 'tl;dr', 'layout': 'post', 'title': 'Hello, world!'}
+>>> from pprint import pprint
+>>> post['excerpt'] = 'tl;dr'
+>>> pprint(post.metadata)
+{'excerpt': 'tl;dr', 'layout': 'post', 'title': 'Hello, world!'}
+```
 
 If you don't need the whole post object, just parse:
 
-    >>> with open('tests/hello-world.markdown') as f:
-    ...     metadata, content = frontmatter.parse(f.read())
-    >>> print(metadata['title'])
-    Hello, world!
+```python
+>>> with open('tests/hello-world.markdown') as f:
+...     metadata, content = frontmatter.parse(f.read())
+>>> print(metadata['title'])
+Hello, world!
+```
 
 Write back to plain text, too:
 
-    >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
-    ---
-    excerpt: tl;dr
-    layout: post
-    title: Hello, world!
-    ---
-    Well, hello there, world.
+```python
+>>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
+---
+excerpt: tl;dr
+layout: post
+title: Hello, world!
+---
+Well, hello there, world.
 
 Or write to a file (or file-like object):
 
-    >>> from io import BytesIO
-    >>> f = BytesIO()
-    >>> frontmatter.dump(post, f)
-    >>> print(f.getvalue().decode('utf-8')) # doctest: +NORMALIZE_WHITESPACE
-    ---
-    excerpt: tl;dr
-    layout: post
-    title: Hello, world!
-    ---
-    Well, hello there, world.
-
+```python
+>>> from io import BytesIO
+>>> f = BytesIO()
+>>> frontmatter.dump(post, f)
+>>> print(f.getvalue().decode('utf-8')) # doctest: +NORMALIZE_WHITESPACE
+---
+excerpt: tl;dr
+layout: post
+title: Hello, world!
+---
+Well, hello there, world.
+```
 
