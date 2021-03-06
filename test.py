@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-from __future__ import print_function
 
 import codecs
 import doctest
@@ -123,7 +121,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
         # pyaml only runs on 2.7 and above
-        if sys.version_info > (2, 6) and pyaml is not None:
+        if pyaml is not None:
 
             with codecs.open("tests/unpretty.md", "r", "utf-8") as f:
                 data = f.read()
@@ -138,8 +136,6 @@ class FrontmatterTest(unittest.TestCase):
             self.assertTrue(yaml in dump)
 
     def test_with_crlf_string(self):
-        import codecs
-
         markdown_bytes = b'---\r\ntitle: "my title"\r\ncontent_type: "post"\r\npublished: no\r\n---\r\n\r\nwrite your content in markdown here'
         loaded = frontmatter.loads(markdown_bytes, "utf-8")
         self.assertEqual(loaded["title"], "my title")
@@ -277,18 +273,17 @@ class HandlerBaseTest:
         }
 
     def read_from_tests(self):
-        with open(self.data["filename"]) as fil:
-            return fil.read()
+        with open(self.data["filename"]) as f:
+            return f.read()
 
     def test_external(self):
         filename = self.data["filename"]
         content = self.data["content"]
         metadata = self.data["metadata"]
-        content_stripped = content.strip()
 
         post = frontmatter.load(filename)
 
-        self.assertEqual(post.content, content_stripped)
+        self.assertEqual(post.content, content.strip())
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
 
@@ -330,7 +325,7 @@ class HandlerBaseTest:
         if any_fail:
             self.fail(failmsg)
 
-    @unittest.skip("metadata can be reordered")
+    # @unittest.skip("metadata can be reordered")
     def test_split_export(self):
         text = self.read_from_tests()
         fm, content = self.handler.split(text)

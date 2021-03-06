@@ -2,7 +2,6 @@
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
-from __future__ import unicode_literals
 
 import codecs
 import re

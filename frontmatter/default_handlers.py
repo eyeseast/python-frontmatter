@@ -112,7 +112,6 @@ All handlers use the interface defined on ``BaseHandler``. Each handler needs to
 
 
 """
-from __future__ import unicode_literals
 
 import json
 import re
