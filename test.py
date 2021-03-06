@@ -325,7 +325,7 @@ class HandlerBaseTest:
         if any_fail:
             self.fail(failmsg)
 
-    # @unittest.skip("metadata can be reordered")
+    @unittest.skip("metadata can be reordered")
     def test_split_export(self):
         text = self.read_from_tests()
         fm, content = self.handler.split(text)
