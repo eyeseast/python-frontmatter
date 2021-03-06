@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-from __future__ import print_function
 
 import codecs
 import doctest
@@ -14,8 +12,6 @@ import sys
 import tempfile
 import textwrap
 import unittest
-
-import six
 
 import frontmatter
 from frontmatter.default_handlers import YAMLHandler, JSONHandler, TOMLHandler
@@ -56,7 +52,7 @@ class FrontmatterTest(unittest.TestCase):
         output = frontmatter.dumps(chinese)
         zh = "中文"
 
-        self.assertTrue(isinstance(chinese.content, six.text_type))
+        self.assertTrue(isinstance(chinese.content, str))
 
         # check that we're dumping out unicode metadata, too
         self.assertTrue(zh in output)
@@ -88,7 +84,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_empty_frontmatter(self):
         "Frontmatter, but no metadata"
         post = frontmatter.load("tests/empty-frontmatter.txt")
-        content = six.text_type("I have frontmatter but no metadata.")
+        content = "I have frontmatter but no metadata."
 
         self.assertEqual(post.metadata, {})
         self.assertEqual(post.content, content)
@@ -96,9 +92,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_extra_space(self):
         "Extra space in frontmatter delimiter"
         post = frontmatter.load("tests/extra-space.txt")
-        content = six.text_type(
-            "This file has an extra space on the opening line of the frontmatter."
-        )
+        content = "This file has an extra space on the opening line of the frontmatter."
 
         self.assertEqual(post.content, content)
         metadata = {"something": "else", "test": "tester"}
@@ -121,13 +115,13 @@ class FrontmatterTest(unittest.TestCase):
 
         # test unicode and bytes
         text = "Well, hello there, world."
-        self.assertEqual(six.text_type(post), text)
-        self.assertEqual(six.binary_type(post), text.encode("utf-8"))
+        self.assertEqual(str(post), text)
+        self.assertEqual(bytes(post), text.encode("utf-8"))
 
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
         # pyaml only runs on 2.7 and above
-        if sys.version_info > (2, 6) and pyaml is not None:
+        if pyaml is not None:
 
             with codecs.open("tests/unpretty.md", "r", "utf-8") as f:
                 data = f.read()
@@ -142,8 +136,6 @@ class FrontmatterTest(unittest.TestCase):
             self.assertTrue(yaml in dump)
 
     def test_with_crlf_string(self):
-        import codecs
-
         markdown_bytes = b'---\r\ntitle: "my title"\r\ncontent_type: "post"\r\npublished: no\r\n---\r\n\r\nwrite your content in markdown here'
         loaded = frontmatter.loads(markdown_bytes, "utf-8")
         self.assertEqual(loaded["title"], "my title")
@@ -281,18 +273,17 @@ class HandlerBaseTest:
         }
 
     def read_from_tests(self):
-        with open(self.data["filename"]) as fil:
-            return fil.read()
+        with open(self.data["filename"]) as f:
+            return f.read()
 
     def test_external(self):
         filename = self.data["filename"]
         content = self.data["content"]
         metadata = self.data["metadata"]
-        content_stripped = content.strip()
 
         post = frontmatter.load(filename)
 
-        self.assertEqual(post.content, content_stripped)
+        self.assertEqual(post.content, content.strip())
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
 
@@ -420,7 +411,7 @@ And this shouldn't break.
 
 
 if __name__ == "__main__":
-    doctest.testfile("README.md")
+    doctest.testfile("README.md", extraglobs={"frontmatter": frontmatter})
     doctest.testmod(
         frontmatter.default_handlers, extraglobs={"frontmatter": frontmatter}
     )

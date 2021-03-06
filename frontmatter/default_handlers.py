@@ -112,7 +112,6 @@ All handlers use the interface defined on ``BaseHandler``. Each handler needs to
 
 
 """
-from __future__ import unicode_literals
 
 import json
 import re
@@ -141,7 +140,7 @@ if toml:
 
 class BaseHandler(object):
     """
-    BaseHandler lays out all the steps to detecting, splitting, parsing and 
+    BaseHandler lays out all the steps to detecting, splitting, parsing and
     exporting front matter metadata.
 
     All default handlers are subclassed from BaseHandler.
@@ -169,7 +168,7 @@ class BaseHandler(object):
         Decide whether this handler can parse the given ``text``,
         and return True or False.
 
-        Note that this is *not* called when passing a handler instance to 
+        Note that this is *not* called when passing a handler instance to
         :py:func:`frontmatter.load <frontmatter.load>` or :py:func:`loads <frontmatter.loads>`.
         """
         if self.FM_BOUNDARY.match(text):
@@ -207,7 +206,7 @@ class YAMLHandler(BaseHandler):
 
     def load(self, fm, **kwargs):
         """
-        Parse YAML front matter. This uses yaml.SafeLoader by default. 
+        Parse YAML front matter. This uses yaml.SafeLoader by default.
         """
         kwargs.setdefault("Loader", SafeLoader)
         return yaml.load(fm, **kwargs)

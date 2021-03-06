@@ -11,8 +11,6 @@ with open("README.md") as f:
     readme = f.read()
 
 
-requirements = ["PyYAML", "six"]
-
 VERSION = "0.5.0"
 
 
@@ -27,7 +25,9 @@ setup(
     url="https://github.com/eyeseast/python-frontmatter",
     packages=["frontmatter"],
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=["PyYAML"],
+    extras_require={"test": ["pytest", "toml"]},
+    tests_require=["python-frontmatter[test]"],
     license="MIT",
     zip_safe=False,
     keywords="frontmatter",
@@ -36,13 +36,12 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     test_suite="test",
 )

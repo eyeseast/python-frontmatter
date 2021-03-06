@@ -2,12 +2,10 @@
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
-from __future__ import unicode_literals
 
 import codecs
 import re
 
-import six
 
 from .util import u
 from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
@@ -38,7 +36,7 @@ def detect_format(text, handlers):
 
     ``text`` should be unicode text about to be parsed.
 
-    ``handlers`` is a dictionary where keys are opening delimiters 
+    ``handlers`` is a dictionary where keys are opening delimiters
     and values are handler instances.
     """
     for pattern, handler in handlers.items():
@@ -93,9 +91,9 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
 
 def check(fd, encoding="utf-8"):
     """
-    Check if a file-like object or filename has a frontmatter, 
+    Check if a file-like object or filename has a frontmatter,
     return True if exists, False otherwise.
-    
+
     If it contains a frontmatter but it is empty, return True as well.
 
     ::
@@ -118,7 +116,7 @@ def checks(text, encoding="utf-8"):
     """
     Check if a text (binary or unicode) has a frontmatter,
     return True if exists, False otherwise.
-    
+
     If it contains a frontmatter but it is empty, return True as well.
 
     ::
@@ -134,7 +132,7 @@ def checks(text, encoding="utf-8"):
 
 def load(fd, encoding="utf-8", handler=None, **defaults):
     """
-    Load and parse a file-like object or filename, 
+    Load and parse a file-like object or filename,
     return a :py:class:`post <frontmatter.Post>`.
 
     ::
@@ -202,12 +200,12 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
 
 def dumps(post, handler=None, **kwargs):
     """
-    Serialize a :py:class:`post <frontmatter.Post>` to a string and return text. 
+    Serialize a :py:class:`post <frontmatter.Post>` to a string and return text.
     This always returns unicode text, which can then be encoded.
 
     Passing ``handler`` will change how metadata is turned into text. A handler
-    passed as an argument will override ``post.handler``, with 
-    :py:class:`YAMLHandler <frontmatter.default_handlers.YAMLHandler>` used as 
+    passed as an argument will override ``post.handler``, with
+    :py:class:`YAMLHandler <frontmatter.default_handlers.YAMLHandler>` used as
     a default.
     ::
 
@@ -239,15 +237,15 @@ def dumps(post, handler=None, **kwargs):
 class Post(object):
     """
     A post contains content and metadata from Front Matter. This is what gets
-    returned by :py:func:`load <frontmatter.load>` and :py:func:`loads <frontmatter.loads>`. 
-    Passing this to :py:func:`dump <frontmatter.dump>` or :py:func:`dumps <frontmatter.dumps>` 
+    returned by :py:func:`load <frontmatter.load>` and :py:func:`loads <frontmatter.loads>`.
+    Passing this to :py:func:`dump <frontmatter.dump>` or :py:func:`dumps <frontmatter.dumps>`
     will turn it back into text.
 
-    For convenience, metadata values are available as proxied item lookups. 
+    For convenience, metadata values are available as proxied item lookups.
     """
 
     def __init__(self, content, handler=None, **metadata):
-        self.content = u(content)
+        self.content = str(content)
         self.metadata = metadata
         self.handler = handler
 
@@ -271,11 +269,6 @@ class Post(object):
         return self.content.encode("utf-8")
 
     def __str__(self):
-        if six.PY2:
-            return self.__bytes__()
-        return self.content
-
-    def __unicode__(self):
         return self.content
 
     def get(self, key, default=None):
