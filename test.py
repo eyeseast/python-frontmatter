@@ -15,8 +15,6 @@ import tempfile
 import textwrap
 import unittest
 
-import six
-
 import frontmatter
 from frontmatter.default_handlers import YAMLHandler, JSONHandler, TOMLHandler
 
@@ -56,7 +54,7 @@ class FrontmatterTest(unittest.TestCase):
         output = frontmatter.dumps(chinese)
         zh = "中文"
 
-        self.assertTrue(isinstance(chinese.content, six.text_type))
+        self.assertTrue(isinstance(chinese.content, str))
 
         # check that we're dumping out unicode metadata, too
         self.assertTrue(zh in output)
@@ -88,7 +86,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_empty_frontmatter(self):
         "Frontmatter, but no metadata"
         post = frontmatter.load("tests/empty-frontmatter.txt")
-        content = six.text_type("I have frontmatter but no metadata.")
+        content = "I have frontmatter but no metadata."
 
         self.assertEqual(post.metadata, {})
         self.assertEqual(post.content, content)
@@ -96,9 +94,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_extra_space(self):
         "Extra space in frontmatter delimiter"
         post = frontmatter.load("tests/extra-space.txt")
-        content = six.text_type(
-            "This file has an extra space on the opening line of the frontmatter."
-        )
+        content = "This file has an extra space on the opening line of the frontmatter."
 
         self.assertEqual(post.content, content)
         metadata = {"something": "else", "test": "tester"}
@@ -121,8 +117,8 @@ class FrontmatterTest(unittest.TestCase):
 
         # test unicode and bytes
         text = "Well, hello there, world."
-        self.assertEqual(six.text_type(post), text)
-        self.assertEqual(six.binary_type(post), text.encode("utf-8"))
+        self.assertEqual(str(post), text)
+        self.assertEqual(bytes(post), text.encode("utf-8"))
 
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
@@ -420,7 +416,7 @@ And this shouldn't break.
 
 
 if __name__ == "__main__":
-    doctest.testfile("README.md")
+    doctest.testfile("README.md", extraglobs={"frontmatter": frontmatter})
     doctest.testmod(
         frontmatter.default_handlers, extraglobs={"frontmatter": frontmatter}
     )
