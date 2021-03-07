@@ -6,6 +6,7 @@ For a file called hello-world.markdown, there should be a corresponding file cal
 matching the expected output.
 """
 import os
+import json
 from itertools import chain
 from pathlib import Path
 
@@ -38,3 +39,8 @@ def test_file(filename):
     result = Path(get_result_filename(filename))
     if not result.exists():
         pytest.fail(f"{result.name} does not exist")
+
+    post = frontmatter.load(filename)
+    result = json.loads(result.read_text())
+
+    assert post.to_dict() == result
