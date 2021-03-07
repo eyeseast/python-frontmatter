@@ -33,14 +33,9 @@ class FrontmatterTest(unittest.TestCase):
 
     maxDiff = None
 
-    def test_all_the_tests(self):
-        "Sanity check that everything in the tests folder loads without errors"
-        for filename in glob.glob("tests/*"):
-            frontmatter.load(filename)
-
     def test_with_markdown_content(self):
         "Parse frontmatter and only the frontmatter"
-        post = frontmatter.load("tests/hello-markdown.markdown")
+        post = frontmatter.load("tests/yaml/hello-markdown.md")
 
         metadata = {"author": "bob", "something": "else", "test": "tester"}
         for k, v in metadata.items():
@@ -48,7 +43,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_unicode_post(self):
         "Ensure unicode is parsed correctly"
-        chinese = frontmatter.load("tests/chinese.txt", "utf-8")
+        chinese = frontmatter.load("tests/yaml/chinese.txt", "utf-8")
         output = frontmatter.dumps(chinese)
         zh = "中文"
 
@@ -62,20 +57,20 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_check_no_frontmatter(self):
         "Checks if a file does not have a frontmatter"
-        ret = frontmatter.check("tests/no-frontmatter.txt")
+        ret = frontmatter.check("tests/empty/no-frontmatter.txt")
 
         self.assertEqual(ret, False)
 
     def test_check_empty_frontmatter(self):
         "Checks if a file has a frontmatter (empty or not)"
-        ret = frontmatter.check("tests/empty-frontmatter.txt")
+        ret = frontmatter.check("tests/empty/empty-frontmatter.txt")
 
         self.assertEqual(ret, True)
 
     def test_no_frontmatter(self):
         "This is not a zen exercise."
-        post = frontmatter.load("tests/no-frontmatter.txt")
-        with codecs.open("tests/no-frontmatter.txt", "r", "utf-8") as f:
+        post = frontmatter.load("tests/empty/no-frontmatter.txt")
+        with codecs.open("tests/empty/no-frontmatter.txt", "r", "utf-8") as f:
             content = f.read().strip()
 
         self.assertEqual(post.metadata, {})
@@ -83,7 +78,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_empty_frontmatter(self):
         "Frontmatter, but no metadata"
-        post = frontmatter.load("tests/empty-frontmatter.txt")
+        post = frontmatter.load("tests/empty/empty-frontmatter.txt")
         content = "I have frontmatter but no metadata."
 
         self.assertEqual(post.metadata, {})
@@ -91,7 +86,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_extra_space(self):
         "Extra space in frontmatter delimiter"
-        post = frontmatter.load("tests/extra-space.txt")
+        post = frontmatter.load("tests/yaml/extra-space.txt")
         content = "This file has an extra space on the opening line of the frontmatter."
 
         self.assertEqual(post.content, content)
@@ -101,7 +96,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_to_dict(self):
         "Dump a post as a dict, for serializing"
-        post = frontmatter.load("tests/network-diagrams.markdown")
+        post = frontmatter.load("tests/yaml/network-diagrams.md")
         post_dict = post.to_dict()
 
         for k, v in post.metadata.items():
@@ -111,7 +106,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_to_string(self):
         "Calling str(post) returns post.content"
-        post = frontmatter.load("tests/hello-world.markdown")
+        post = frontmatter.load("tests/yaml/hello-world.txt")
 
         # test unicode and bytes
         text = "Well, hello there, world."
@@ -123,10 +118,10 @@ class FrontmatterTest(unittest.TestCase):
         # pyaml only runs on 2.7 and above
         if pyaml is not None:
 
-            with codecs.open("tests/unpretty.md", "r", "utf-8") as f:
+            with codecs.open("tests/yaml/unpretty.md", "r", "utf-8") as f:
                 data = f.read()
 
-            post = frontmatter.load("tests/unpretty.md")
+            post = frontmatter.load("tests/yaml/unpretty.md")
             yaml = pyaml.dump(post.metadata)
 
             # the unsafe dumper gives you nicer output, for times you want that
@@ -142,14 +137,14 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_dumping_with_custom_delimiters(self):
         "dump with custom delimiters"
-        post = frontmatter.load("tests/hello-world.markdown")
+        post = frontmatter.load("tests/yaml/hello-world.txt")
         dump = frontmatter.dumps(post, start_delimiter="+++", end_delimiter="+++")
 
         self.assertTrue("+++" in dump)
 
     def test_dump_to_file(self):
         "dump post to filename"
-        post = frontmatter.load("tests/hello-world.markdown")
+        post = frontmatter.load("tests/yaml/hello-world.txt")
 
         tempdir = tempfile.mkdtemp()
         filename = os.path.join(tempdir, "hello.md")
@@ -168,9 +163,9 @@ class HandlerTest(unittest.TestCase):
     """
 
     TEST_FILES = {
-        "tests/hello-world.markdown": YAMLHandler,
-        "tests/hello-json.markdown": JSONHandler,
-        "tests/hello-toml.markdown": TOMLHandler,
+        "tests/yaml/hello-world.txt": YAMLHandler,
+        "tests/json/hello-json.md": JSONHandler,
+        "tests/toml/hello-toml.md": TOMLHandler,
     }
 
     def sanity_check(self, filename, handler_type):
@@ -201,7 +196,7 @@ class HandlerTest(unittest.TestCase):
 
     def test_no_handler(self):
         "default to YAMLHandler when no handler is attached"
-        post = frontmatter.load("tests/hello-world.markdown")
+        post = frontmatter.load("tests/yaml/hello-world.txt")
         del post.handler
 
         text = frontmatter.dumps(post)
@@ -242,14 +237,14 @@ class HandlerTest(unittest.TestCase):
         "load toml frontmatter"
         if toml is None:
             return
-        post = frontmatter.load("tests/hello-toml.markdown")
+        post = frontmatter.load("tests/toml/hello-toml.md")
         metadata = {"author": "bob", "something": "else", "test": "tester"}
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
 
     def test_json(self):
         "load raw JSON frontmatter"
-        post = frontmatter.load("tests/hello-json.markdown")
+        post = frontmatter.load("tests/json/hello-json.md")
         metadata = {"author": "bob", "something": "else", "test": "tester"}
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
@@ -266,7 +261,7 @@ class HandlerBaseTest:
         """
         self.handler = None
         self.data = {
-            "filename": "tests/hello-world.markdown",
+            "filename": "tests/yaml/hello-world.txt",
             "content": """\
 """,
             "metadata": {},
@@ -339,7 +334,7 @@ class YAMLHandlerTest(HandlerBaseTest, unittest.TestCase):
     def setUp(self):
         self.handler = YAMLHandler()
         self.data = {
-            "filename": "tests/hello-markdown.markdown",
+            "filename": "tests/yaml/hello-markdown.md",
             # TODO: YAMLHandler.split() is prepending '\n' to the content
             "content": """\
 
@@ -363,7 +358,7 @@ class JSONHandlerTest(HandlerBaseTest, unittest.TestCase):
     def setUp(self):
         self.handler = JSONHandler()
         self.data = {
-            "filename": "tests/hello-json.markdown",
+            "filename": "tests/json/hello-json.md",
             # TODO: JSONHandler.split() is prepending '\n' to the content
             "content": """\
 
@@ -389,7 +384,7 @@ class TOMLHandlerTest(HandlerBaseTest, unittest.TestCase):
     def setUp(self):
         self.handler = TOMLHandler()
         self.data = {
-            "filename": "tests/hello-toml.markdown",
+            "filename": "tests/toml/hello-toml.md",
             # TODO: TOMLHandler.split() is prepending '\n' to the content
             "content": """\
 
@@ -411,8 +406,4 @@ And this shouldn't break.
 
 
 if __name__ == "__main__":
-    doctest.testfile("README.md", extraglobs={"frontmatter": frontmatter})
-    doctest.testmod(
-        frontmatter.default_handlers, extraglobs={"frontmatter": frontmatter}
-    )
     unittest.main()

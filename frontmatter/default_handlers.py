@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """
+.. testsetup:: handlers
+
+    import frontmatter
+
 By default, ``frontmatter`` reads and writes YAML metadata. But maybe
 you don't like YAML. Maybe enjoy writing metadata in JSON, or TOML, or
 some other exotic markup not yet invented. For this, there are handlers.
@@ -31,11 +35,12 @@ The handler instance gets saved as an attribute on the returned post
 object. By default, calling :py:func:`frontmatter.dumps <frontmatter.dumps>` 
 on the post will use the attached handler.
 
+
 ::
 
     >>> import frontmatter
     >>> from frontmatter.default_handlers import YAMLHandler, TOMLHandler
-    >>> post = frontmatter.load('tests/hello-toml.markdown', handler=TOMLHandler())
+    >>> post = frontmatter.load('tests/toml/hello-toml.markdown', handler=TOMLHandler())
     >>> post.handler #doctest: +ELLIPSIS
     <frontmatter.default_handlers.TOMLHandler object at 0x...>
 

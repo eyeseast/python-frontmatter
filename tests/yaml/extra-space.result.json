@@ -1,0 +1,5 @@
+{
+  "test": "tester",
+  "something": "else",
+  "content": "This file has an extra space on the opening line of the frontmatter."
+}
