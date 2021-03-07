@@ -55,9 +55,13 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
     If frontmatter is not found, returns an empty metadata dictionary
     (or defaults) and original text content.
 
-    ::
+    .. testsetup:: *
 
-        >>> with open('tests/hello-world.markdown') as f:
+        import frontmatter
+
+    .. doctest::
+
+        >>> with open('../tests/yaml/hello-world.txt') as f:
         ...     metadata, content = frontmatter.parse(f.read())
         >>> print(metadata['title'])
         Hello, world!
@@ -96,9 +100,9 @@ def check(fd, encoding="utf-8"):
 
     If it contains a frontmatter but it is empty, return True as well.
 
-    ::
+    .. doctest::
 
-        >>> frontmatter.check('tests/hello-world.markdown')
+        >>> frontmatter.check('../tests/yaml/hello-world.txt')
         True
 
     """
@@ -119,9 +123,9 @@ def checks(text, encoding="utf-8"):
 
     If it contains a frontmatter but it is empty, return True as well.
 
-    ::
+    .. doctest::
 
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> with open('../tests/yaml/hello-world.txt') as f:
         ...     frontmatter.checks(f.read())
         True
 
@@ -135,10 +139,10 @@ def load(fd, encoding="utf-8", handler=None, **defaults):
     Load and parse a file-like object or filename,
     return a :py:class:`post <frontmatter.Post>`.
 
-    ::
+    .. doctest::
 
-        >>> post = frontmatter.load('tests/hello-world.markdown')
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> post = frontmatter.load('../tests/yaml/hello-world.txt')
+        >>> with open('../tests/yaml/hello-world.txt') as f:
         ...     post = frontmatter.load(f)
 
     """
@@ -157,9 +161,9 @@ def loads(text, encoding="utf-8", handler=None, **defaults):
     """
     Parse text (binary or unicode) and return a :py:class:`post <frontmatter.Post>`.
 
-    ::
+    .. doctest::
 
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> with open('../tests/yaml/hello-world.txt') as f:
         ...     post = frontmatter.loads(f.read())
 
     """
@@ -177,16 +181,34 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
     ::
 
         >>> from io import BytesIO
+        >>> post = frontmatter.load('../tests/yaml/hello-world.txt')
         >>> f = BytesIO()
         >>> frontmatter.dump(post, f)
-        >>> print(f.getvalue())
+        >>> print(f.getvalue().decode('utf-8'))
         ---
-        excerpt: tl;dr
         layout: post
         title: Hello, world!
         ---
+
         Well, hello there, world.
 
+
+    .. testcode::
+
+        from io import BytesIO
+        post = frontmatter.load('../tests/yaml/hello-world.txt')
+        f = BytesIO()
+        frontmatter.dump(post, f)
+        print(f.getvalue().decode('utf-8'))
+
+    .. testoutput::
+
+        ---
+        layout: post
+        title: Hello, world!
+        ---
+
+        Well, hello there, world.
 
     """
     content = dumps(post, handler, **kwargs)
@@ -207,14 +229,30 @@ def dumps(post, handler=None, **kwargs):
     passed as an argument will override ``post.handler``, with
     :py:class:`YAMLHandler <frontmatter.default_handlers.YAMLHandler>` used as
     a default.
+
     ::
 
-        >>> print(frontmatter.dumps(post))
+        >>> post = frontmatter.load('../tests/yaml/hello-world.txt')
+        >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
         ---
-        excerpt: tl;dr
         layout: post
         title: Hello, world!
         ---
+
+        Well, hello there, world.
+
+    .. testcode::
+
+        post = frontmatter.load('../tests/yaml/hello-world.txt')
+        print(frontmatter.dumps(post))
+
+    .. testoutput::
+
+        ---
+        layout: post
+        title: Hello, world!
+        ---
+
         Well, hello there, world.
 
     """

@@ -34,20 +34,20 @@ Load a post from a filename:
 
 ::
 
-    >>> post = frontmatter.load('tests/hello-world.markdown')
+    >>> post = frontmatter.load('tests/yaml/hello-world.txt')
 
 Or a file (or file-like object):
 
 ::
 
-    >>> with open('tests/hello-world.markdown') as f:
+    >>> with open('tests/yaml/hello-world.txt') as f:
     ...     post = frontmatter.load(f)
 
 Or load from text:
 
 ::
 
-    >>> with open('tests/hello-world.markdown') as f:
+    >>> with open('tests/yaml/hello-world.txt') as f:
     ...     post = frontmatter.loads(f.read())
 
 Access content:
@@ -84,7 +84,7 @@ If you don't need the whole post object, just parse:
 
 ::
 
-    >>> with open('tests/hello-world.markdown') as f:
+    >>> with open('tests/yaml/hello-world.txt') as f:
     ...     metadata, content = frontmatter.parse(f.read())
     >>> print(metadata['title'])
     Hello, world!

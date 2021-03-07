@@ -19,13 +19,13 @@ import frontmatter
 Load a post from a filename:
 
 ```python
-post = frontmatter.load('tests/hello-world.markdown')
+post = frontmatter.load('tests/yaml/hello-world.txt')
 ```
 
 Or a file (or file-like object):
 
 ```python
->>> with open('tests/hello-world.markdown') as f:
+>>> with open('tests/yaml/hello-world.txt') as f:
 ...     post = frontmatter.load(f)
 
 ```
@@ -33,7 +33,7 @@ Or a file (or file-like object):
 Or load from text:
 
 ```python
->>> with open('tests/hello-world.markdown') as f:
+>>> with open('tests/yaml/hello-world.txt') as f:
 ...     post = frontmatter.loads(f.read())
 
 ```
@@ -74,7 +74,7 @@ Metadata is a dictionary, with some handy proxies:
 If you don't need the whole post object, just parse:
 
 ```python
->>> with open('tests/hello-world.markdown') as f:
+>>> with open('tests/yaml/hello-world.txt') as f:
 ...     metadata, content = frontmatter.parse(f.read())
 >>> print(metadata['title'])
 Hello, world!
