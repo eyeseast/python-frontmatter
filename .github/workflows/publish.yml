@@ -27,7 +27,7 @@ jobs:
         run: |
           pip install -e '.[test]'
       - name: Run tests
-        run: python test.py
+        run: pytest
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
