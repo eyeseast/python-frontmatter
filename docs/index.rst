@@ -12,7 +12,7 @@ Python Frontmatter
 useful way to add arbitrary, structured metadata to text documents,
 regardless of type.
 
-This is a small package to load and parse files (or just text) with YAML
+This is a package to load and parse files (or text strings) with YAML
 front matter.
 
 
@@ -80,7 +80,7 @@ Metadata is a dictionary, with some handy proxies:
     >>> pprint(post.metadata)
     {'excerpt': 'tl;dr', 'layout': 'post', 'title': 'Hello, world!'}
 
-If you don't need the whole post object, just parse:
+If you don't need the whole post object, use `frontmatter.parse` to return metadata and content separately:
 
 ::
 

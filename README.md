@@ -109,3 +109,5 @@ title: Hello, world!
 Well, hello there, world.
 
 ```
+
+For more examples, see files in the `tests/` directory. Each sample file has a corresponding `.result.json` file showing the expected parsed output.
