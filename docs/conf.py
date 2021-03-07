@@ -50,7 +50,7 @@ master_doc = "index"
 
 # General information about the project.
 project = u"Python Frontmatter"
-copyright = u"2017, Chris Amico"
+copyright = u"2021, Chris Amico"
 author = u"Chris Amico"
 
 # The version info for the project you're documenting, acts as replacement for

@@ -406,8 +406,4 @@ And this shouldn't break.
 
 
 if __name__ == "__main__":
-    # doctest.testfile("README.md", extraglobs={"frontmatter": frontmatter})
-    # doctest.testmod(
-    #    frontmatter.default_handlers, extraglobs={"frontmatter": frontmatter}
-    # )
     unittest.main()
