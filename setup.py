@@ -26,7 +26,7 @@ setup(
     packages=["frontmatter"],
     include_package_data=True,
     install_requires=["PyYAML"],
-    extras_require={"test": ["pytest", "toml"]},
+    extras_require={"test": ["pytest", "toml", "pyaml"]},
     tests_require=["python-frontmatter[test]"],
     license="MIT",
     zip_safe=False,
