@@ -14,7 +14,7 @@ class ReverseYAMLHandler(frontmatter.YAMLHandler):
     This is an example of using Handler.parse and Handler.format to move Frontmatter to the bottom
     of a file, both for parsing and output.
 
-    >>> with open("./content/reversed.txt") as f:
+    >>> with open("examples/content/reversed.txt") as f:
     ...     text = f.read()
     >>> handler = ReverseYAMLHandler()
     >>> post = frontmatter.loads(text, handler=handler)
@@ -47,9 +47,3 @@ class ReverseYAMLHandler(frontmatter.YAMLHandler):
             start_delimiter=start_delimiter,
             end_delimiter=end_delimiter,
         ).strip()
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()

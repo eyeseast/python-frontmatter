@@ -40,7 +40,7 @@ on the post will use the attached handler.
 
     >>> import frontmatter
     >>> from frontmatter.default_handlers import YAMLHandler, TOMLHandler
-    >>> post = frontmatter.load('tests/toml/hello-toml.markdown', handler=TOMLHandler())
+    >>> post = frontmatter.load('tests/toml/hello-toml.md', handler=TOMLHandler())
     >>> post.handler #doctest: +ELLIPSIS
     <frontmatter.default_handlers.TOMLHandler object at 0x...>
 
@@ -97,11 +97,9 @@ These three variations will produce the same export:
 
     # set YAML format when dumping, but the old handler attached
     >>> t1 = frontmatter.dumps(post, handler=YAMLHandler())
-    # set a new handler, changing all future exports
-    >>> post.handler = YAMLHandler()
+    >>> post.handler = YAMLHandler() # set a new handler, changing all future exports
     >>> t2 = frontmatter.dumps(post)
-    # remove handler, defaulting back to YAML
-    >>> post.handler = None
+    >>> post.handler = None # remove handler, defaulting back to YAML
     >>> t3 = frontmatter.dumps(post)
     >>> t1 == t2 == t3
     True
