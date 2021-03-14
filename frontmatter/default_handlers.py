@@ -109,6 +109,7 @@ All handlers use the interface defined on ``BaseHandler``. Each handler needs to
 - split metadata and content, based on a boundary pattern (``handler.split``)
 - parse plain text metadata into a Python dictionary (``handler.load``)
 - export a dictionary back into plain text (``handler.export``)
+- format exported metadata and content into a single string (``handler.format``)
 
 
 """
@@ -138,7 +139,16 @@ if toml:
     __all__.append("TOMLHandler")
 
 
-class BaseHandler(object):
+DEFAULT_POST_TEMPLATE = """\
+{start_delimiter}
+{metadata}
+{end_delimiter}
+
+{content}
+"""
+
+
+class BaseHandler:
     """
     BaseHandler lays out all the steps to detecting, splitting, parsing and
     exporting front matter metadata.
@@ -193,6 +203,22 @@ class BaseHandler(object):
         Turn metadata back into text
         """
         raise NotImplementedError
+
+    def format(self, post, **kwargs):
+        """
+        Turn a post into a string, used in ``frontmatter.dumps``
+        """
+        start_delimiter = kwargs.pop("start_delimiter", self.START_DELIMITER)
+        end_delimiter = kwargs.pop("end_delimiter", self.END_DELIMITER)
+
+        metadata = self.export(post.metadata, **kwargs)
+
+        return DEFAULT_POST_TEMPLATE.format(
+            metadata=metadata,
+            content=post.content,
+            start_delimiter=start_delimiter,
+            end_delimiter=end_delimiter,
+        ).strip()
 
 
 class YAMLHandler(BaseHandler):

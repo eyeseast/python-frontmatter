@@ -13,13 +13,6 @@ from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
 
 __all__ = ["parse", "load", "loads", "dump", "dumps"]
 
-POST_TEMPLATE = """\
-{start_delimiter}
-{metadata}
-{end_delimiter}
-
-{content}
-"""
 
 # global handlers
 handlers = {
@@ -259,17 +252,7 @@ def dumps(post, handler=None, **kwargs):
     if handler is None:
         handler = getattr(post, "handler", None) or YAMLHandler()
 
-    start_delimiter = kwargs.pop("start_delimiter", handler.START_DELIMITER)
-    end_delimiter = kwargs.pop("end_delimiter", handler.END_DELIMITER)
-
-    metadata = handler.export(post.metadata, **kwargs)
-
-    return POST_TEMPLATE.format(
-        metadata=metadata,
-        content=post.content,
-        start_delimiter=start_delimiter,
-        end_delimiter=end_delimiter,
-    ).strip()
+    return handler.format(post, **kwargs)
 
 
 class Post(object):
