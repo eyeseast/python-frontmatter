@@ -15,11 +15,11 @@ __all__ = ["parse", "load", "loads", "dump", "dumps"]
 
 
 # global handlers
-handlers = {
-    Handler.FM_BOUNDARY: Handler()
+handlers = [
+    Handler()
     for Handler in [YAMLHandler, JSONHandler, TOMLHandler]
     if Handler is not None
-}
+]
 
 
 def detect_format(text, handlers):
@@ -32,8 +32,8 @@ def detect_format(text, handlers):
     ``handlers`` is a dictionary where keys are opening delimiters
     and values are handler instances.
     """
-    for pattern, handler in handlers.items():
-        if pattern.match(text):
+    for handler in handlers:
+        if handler.detect(text):
             return handler
 
     # nothing matched, give nothing back
