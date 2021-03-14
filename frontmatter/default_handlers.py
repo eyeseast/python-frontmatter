@@ -97,15 +97,12 @@ These three variations will produce the same export:
 
     # set YAML format when dumping, but the old handler attached
     >>> t1 = frontmatter.dumps(post, handler=YAMLHandler())
-
     # set a new handler, changing all future exports
     >>> post.handler = YAMLHandler()
     >>> t2 = frontmatter.dumps(post)
-
     # remove handler, defaulting back to YAML
     >>> post.handler = None
     >>> t3 = frontmatter.dumps(post)
-
     >>> t1 == t2 == t3
     True
 
