@@ -1,0 +1,28 @@
+This is txt format to prevent reformatting
+============================================
+
+Dextra tempore deus
+-------------------
+
+Lorem markdownum est dicere pariter es dat si non, praesignis Styge, non
+Maenalon magnae miserrimus. Corpora frustra committere insuetum et fecit
+**Hippothousque arbore solio** inopem utraque concepit illa comantem me mortis
+epulis protinus putares! Piceis *manibus*. Erinys et parum morsusque repugnat
+ore corna sacris, pollice movet currus gestamina.
+
+Genitoris forti circumfuso videbit fertur vulnere simillima
+-----------------------------------------------------------
+
+Audit enim, est illa nervis loco inque hoc, et rigido! Monstris vatibus laetos
+contemptor Calydonia. Et visa capillo referens regia: usus: odiique nostro.
+**Vim** sensit inpulit virginis metuens secum cogit, corpus.
+
+Humus ater Dromas est honorem, Titanida glandibus sinit, e terras capillos
+cremet retinentibus male. Tertia et cedit eliso flectere haec, cute nihil
+marmore armo. Mihi [Olympi](http://que.org/saepepoenas), iam sustinet addidit
+humana similis.
+
+---
+title: Front matter, reversed
+ref: https://github.com/eyeseast/python-frontmatter/issues/67
+---

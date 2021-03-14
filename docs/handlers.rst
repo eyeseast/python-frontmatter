@@ -1,8 +1,6 @@
 Customizing input and output
 ============================
 
-.. module:: frontmatter
-
 .. automodule:: frontmatter.default_handlers
 
 .. autoclass:: frontmatter.default_handlers.BaseHandler

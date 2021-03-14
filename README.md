@@ -13,13 +13,15 @@ This is a small package to load and parse files (or just text) with YAML front m
 ## Usage:
 
 ```python
-import frontmatter
+>>> import frontmatter
+
 ```
 
 Load a post from a filename:
 
 ```python
-post = frontmatter.load('tests/yaml/hello-world.txt')
+>>> post = frontmatter.load('tests/yaml/hello-world.txt')
+
 ```
 
 Or a file (or file-like object):

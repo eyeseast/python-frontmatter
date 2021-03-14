@@ -13,13 +13,6 @@ from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
 
 __all__ = ["parse", "load", "loads", "dump", "dumps"]
 
-POST_TEMPLATE = """\
-{start_delimiter}
-{metadata}
-{end_delimiter}
-
-{content}
-"""
 
 # global handlers
 handlers = {
@@ -57,11 +50,11 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
 
     .. testsetup:: *
 
-        import frontmatter
+        >>> import frontmatter
 
     .. doctest::
 
-        >>> with open('../tests/yaml/hello-world.txt') as f:
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     metadata, content = frontmatter.parse(f.read())
         >>> print(metadata['title'])
         Hello, world!
@@ -102,7 +95,7 @@ def check(fd, encoding="utf-8"):
 
     .. doctest::
 
-        >>> frontmatter.check('../tests/yaml/hello-world.txt')
+        >>> frontmatter.check('tests/yaml/hello-world.txt')
         True
 
     """
@@ -125,7 +118,7 @@ def checks(text, encoding="utf-8"):
 
     .. doctest::
 
-        >>> with open('../tests/yaml/hello-world.txt') as f:
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     frontmatter.checks(f.read())
         True
 
@@ -141,8 +134,8 @@ def load(fd, encoding="utf-8", handler=None, **defaults):
 
     .. doctest::
 
-        >>> post = frontmatter.load('../tests/yaml/hello-world.txt')
-        >>> with open('../tests/yaml/hello-world.txt') as f:
+        >>> post = frontmatter.load('tests/yaml/hello-world.txt')
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     post = frontmatter.load(f)
 
     """
@@ -163,7 +156,7 @@ def loads(text, encoding="utf-8", handler=None, **defaults):
 
     .. doctest::
 
-        >>> with open('../tests/yaml/hello-world.txt') as f:
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     post = frontmatter.loads(f.read())
 
     """
@@ -181,7 +174,7 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
     ::
 
         >>> from io import BytesIO
-        >>> post = frontmatter.load('../tests/yaml/hello-world.txt')
+        >>> post = frontmatter.load('tests/yaml/hello-world.txt')
         >>> f = BytesIO()
         >>> frontmatter.dump(post, f)
         >>> print(f.getvalue().decode('utf-8'))
@@ -189,14 +182,14 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
         layout: post
         title: Hello, world!
         ---
-
+        <BLANKLINE>
         Well, hello there, world.
 
 
     .. testcode::
 
         from io import BytesIO
-        post = frontmatter.load('../tests/yaml/hello-world.txt')
+        post = frontmatter.load('tests/yaml/hello-world.txt')
         f = BytesIO()
         frontmatter.dump(post, f)
         print(f.getvalue().decode('utf-8'))
@@ -207,7 +200,7 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
         layout: post
         title: Hello, world!
         ---
-
+        <BLANKLINE>
         Well, hello there, world.
 
     """
@@ -232,18 +225,18 @@ def dumps(post, handler=None, **kwargs):
 
     ::
 
-        >>> post = frontmatter.load('../tests/yaml/hello-world.txt')
+        >>> post = frontmatter.load('tests/yaml/hello-world.txt')
         >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
         ---
         layout: post
         title: Hello, world!
         ---
-
+        <BLANKLINE>
         Well, hello there, world.
 
     .. testcode::
 
-        post = frontmatter.load('../tests/yaml/hello-world.txt')
+        post = frontmatter.load('tests/yaml/hello-world.txt')
         print(frontmatter.dumps(post))
 
     .. testoutput::
@@ -259,17 +252,7 @@ def dumps(post, handler=None, **kwargs):
     if handler is None:
         handler = getattr(post, "handler", None) or YAMLHandler()
 
-    start_delimiter = kwargs.pop("start_delimiter", handler.START_DELIMITER)
-    end_delimiter = kwargs.pop("end_delimiter", handler.END_DELIMITER)
-
-    metadata = handler.export(post.metadata, **kwargs)
-
-    return POST_TEMPLATE.format(
-        metadata=metadata,
-        content=post.content,
-        start_delimiter=start_delimiter,
-        end_delimiter=end_delimiter,
-    ).strip()
+    return handler.format(post, **kwargs)
 
 
 class Post(object):

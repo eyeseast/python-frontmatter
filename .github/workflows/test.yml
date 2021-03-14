@@ -25,4 +25,5 @@ jobs:
         run: |
           pip install -e '.[test]'
       - name: Run tests
-        run: pytest
+        run: |
+          pytest . --doctest-modules --doctest-glob "README.md"
