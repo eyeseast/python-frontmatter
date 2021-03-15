@@ -2,9 +2,10 @@
 
 [Jekyll](http://jekyllrb.com/)-style YAML front matter offers a useful way to add arbitrary, structured metadata to text documents, regardless of type.
 
-This is a small package to load and parse files (or just text) with YAML front matter.
+This is a small package to load and parse files (or just text) with YAML (or JSON, TOML or other) front matter.
 
-[![Build Status](https://travis-ci.org/eyeseast/python-frontmatter.svg?branch=master)](https://travis-ci.org/eyeseast/python-frontmatter)
+[![Tests](https://github.com/eyeseast/feed-to-sqlite/workflows/Test/badge.svg)](https://github.com/eyeseast/feed-to-sqlite/actions?query=workflow%3ATest)
+[![PyPI](https://img.shields.io/pypi/v/python-frontmatter.svg)](https://pypi.org/project/python-frontmatter/)
 
 **[Documentation](https://python-frontmatter.readthedocs.io/en/latest/)**
 
