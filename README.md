@@ -6,6 +6,8 @@ This is a small package to load and parse files (or just text) with YAML front m
 
 [![Build Status](https://travis-ci.org/eyeseast/python-frontmatter.svg?branch=master)](https://travis-ci.org/eyeseast/python-frontmatter)
 
+**[Documentation](https://python-frontmatter.readthedocs.io/en/latest/)**
+
 ## Install:
 
     pip install python-frontmatter
@@ -112,4 +114,4 @@ Well, hello there, world.
 
 ```
 
-For more examples, see files in the `tests/` directory. Each sample file has a corresponding `.result.json` file showing the expected parsed output.
+For more examples, see files in the `tests/` directory. Each sample file has a corresponding `.result.json` file showing the expected parsed output. See also the `examples/` directory, which covers more ways to customize input and output.

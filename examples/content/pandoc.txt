@@ -1,0 +1,11 @@
+---
+lipsum: https://www.lipsum.com/
+ref: https://github.com/eyeseast/python-frontmatter/issues/42
+title: Pandoc-flavored Front Matter
+...
+
+Nulla pulvinar, turpis ullamcorper tempus posuere, sapien purus porttitor diam, id ullamcorper lorem neque id mauris. Sed facilisis, elit eget luctus posuere, quam nibh imperdiet magna, vel placerat arcu risus sit amet arcu. Morbi sit amet mollis leo. Mauris sit amet condimentum mi. Quisque lectus libero, varius scelerisque tempor ut, elementum ac diam. Morbi nisl sapien, ullamcorper ac elementum at, auctor quis magna. Curabitur nec neque purus.
+
+Proin tincidunt cursus turpis, mattis euismod sapien. Cras consectetur id felis non volutpat. Proin vulputate ante gravida quam euismod blandit. Nulla at varius nibh. Donec congue erat vel mattis volutpat. Sed fringilla lorem sit amet velit ornare gravida. Sed ac scelerisque nisi.
+
+Generated 2 paragraphs, 109 words, 730 bytes of Lorem Ipsum
