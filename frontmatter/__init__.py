@@ -2,12 +2,10 @@
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
-from __future__ import unicode_literals
 
 import codecs
 import re
 
-import six
 
 from .util import u
 from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
@@ -15,20 +13,13 @@ from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
 
 __all__ = ["parse", "load", "loads", "dump", "dumps"]
 
-POST_TEMPLATE = """\
-{start_delimiter}
-{metadata}
-{end_delimiter}
-
-{content}
-"""
 
 # global handlers
-handlers = {
-    Handler.FM_BOUNDARY: Handler()
+handlers = [
+    Handler()
     for Handler in [YAMLHandler, JSONHandler, TOMLHandler]
     if Handler is not None
-}
+]
 
 
 def detect_format(text, handlers):
@@ -38,11 +29,11 @@ def detect_format(text, handlers):
 
     ``text`` should be unicode text about to be parsed.
 
-    ``handlers`` is a dictionary where keys are opening delimiters 
+    ``handlers`` is a dictionary where keys are opening delimiters
     and values are handler instances.
     """
-    for pattern, handler in handlers.items():
-        if pattern.match(text):
+    for handler in handlers:
+        if handler.detect(text):
             return handler
 
     # nothing matched, give nothing back
@@ -57,9 +48,13 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
     If frontmatter is not found, returns an empty metadata dictionary
     (or defaults) and original text content.
 
-    ::
+    .. testsetup:: *
 
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> import frontmatter
+
+    .. doctest::
+
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     metadata, content = frontmatter.parse(f.read())
         >>> print(metadata['title'])
         Hello, world!
@@ -93,14 +88,14 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
 
 def check(fd, encoding="utf-8"):
     """
-    Check if a file-like object or filename has a frontmatter, 
+    Check if a file-like object or filename has a frontmatter,
     return True if exists, False otherwise.
-    
+
     If it contains a frontmatter but it is empty, return True as well.
 
-    ::
+    .. doctest::
 
-        >>> frontmatter.check('tests/hello-world.markdown')
+        >>> frontmatter.check('tests/yaml/hello-world.txt')
         True
 
     """
@@ -118,12 +113,12 @@ def checks(text, encoding="utf-8"):
     """
     Check if a text (binary or unicode) has a frontmatter,
     return True if exists, False otherwise.
-    
+
     If it contains a frontmatter but it is empty, return True as well.
 
-    ::
+    .. doctest::
 
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     frontmatter.checks(f.read())
         True
 
@@ -134,13 +129,13 @@ def checks(text, encoding="utf-8"):
 
 def load(fd, encoding="utf-8", handler=None, **defaults):
     """
-    Load and parse a file-like object or filename, 
+    Load and parse a file-like object or filename,
     return a :py:class:`post <frontmatter.Post>`.
 
-    ::
+    .. doctest::
 
-        >>> post = frontmatter.load('tests/hello-world.markdown')
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> post = frontmatter.load('tests/yaml/hello-world.txt')
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     post = frontmatter.load(f)
 
     """
@@ -159,9 +154,9 @@ def loads(text, encoding="utf-8", handler=None, **defaults):
     """
     Parse text (binary or unicode) and return a :py:class:`post <frontmatter.Post>`.
 
-    ::
+    .. doctest::
 
-        >>> with open('tests/hello-world.markdown') as f:
+        >>> with open('tests/yaml/hello-world.txt') as f:
         ...     post = frontmatter.loads(f.read())
 
     """
@@ -179,16 +174,34 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
     ::
 
         >>> from io import BytesIO
+        >>> post = frontmatter.load('tests/yaml/hello-world.txt')
         >>> f = BytesIO()
         >>> frontmatter.dump(post, f)
-        >>> print(f.getvalue())
+        >>> print(f.getvalue().decode('utf-8'))
         ---
-        excerpt: tl;dr
         layout: post
         title: Hello, world!
         ---
+        <BLANKLINE>
         Well, hello there, world.
 
+
+    .. testcode::
+
+        from io import BytesIO
+        post = frontmatter.load('tests/yaml/hello-world.txt')
+        f = BytesIO()
+        frontmatter.dump(post, f)
+        print(f.getvalue().decode('utf-8'))
+
+    .. testoutput::
+
+        ---
+        layout: post
+        title: Hello, world!
+        ---
+        <BLANKLINE>
+        Well, hello there, world.
 
     """
     content = dumps(post, handler, **kwargs)
@@ -202,52 +215,58 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
 
 def dumps(post, handler=None, **kwargs):
     """
-    Serialize a :py:class:`post <frontmatter.Post>` to a string and return text. 
+    Serialize a :py:class:`post <frontmatter.Post>` to a string and return text.
     This always returns unicode text, which can then be encoded.
 
     Passing ``handler`` will change how metadata is turned into text. A handler
-    passed as an argument will override ``post.handler``, with 
-    :py:class:`YAMLHandler <frontmatter.default_handlers.YAMLHandler>` used as 
+    passed as an argument will override ``post.handler``, with
+    :py:class:`YAMLHandler <frontmatter.default_handlers.YAMLHandler>` used as
     a default.
+
     ::
 
-        >>> print(frontmatter.dumps(post))
+        >>> post = frontmatter.load('tests/yaml/hello-world.txt')
+        >>> print(frontmatter.dumps(post)) # doctest: +NORMALIZE_WHITESPACE
         ---
-        excerpt: tl;dr
         layout: post
         title: Hello, world!
         ---
+        <BLANKLINE>
+        Well, hello there, world.
+
+    .. testcode::
+
+        post = frontmatter.load('tests/yaml/hello-world.txt')
+        print(frontmatter.dumps(post))
+
+    .. testoutput::
+
+        ---
+        layout: post
+        title: Hello, world!
+        ---
+
         Well, hello there, world.
 
     """
     if handler is None:
         handler = getattr(post, "handler", None) or YAMLHandler()
 
-    start_delimiter = kwargs.pop("start_delimiter", handler.START_DELIMITER)
-    end_delimiter = kwargs.pop("end_delimiter", handler.END_DELIMITER)
-
-    metadata = handler.export(post.metadata, **kwargs)
-
-    return POST_TEMPLATE.format(
-        metadata=metadata,
-        content=post.content,
-        start_delimiter=start_delimiter,
-        end_delimiter=end_delimiter,
-    ).strip()
+    return handler.format(post, **kwargs)
 
 
 class Post(object):
     """
     A post contains content and metadata from Front Matter. This is what gets
-    returned by :py:func:`load <frontmatter.load>` and :py:func:`loads <frontmatter.loads>`. 
-    Passing this to :py:func:`dump <frontmatter.dump>` or :py:func:`dumps <frontmatter.dumps>` 
+    returned by :py:func:`load <frontmatter.load>` and :py:func:`loads <frontmatter.loads>`.
+    Passing this to :py:func:`dump <frontmatter.dump>` or :py:func:`dumps <frontmatter.dumps>`
     will turn it back into text.
 
-    For convenience, metadata values are available as proxied item lookups. 
+    For convenience, metadata values are available as proxied item lookups.
     """
 
     def __init__(self, content, handler=None, **metadata):
-        self.content = u(content)
+        self.content = str(content)
         self.metadata = metadata
         self.handler = handler
 
@@ -271,11 +290,6 @@ class Post(object):
         return self.content.encode("utf-8")
 
     def __str__(self):
-        if six.PY2:
-            return self.__bytes__()
-        return self.content
-
-    def __unicode__(self):
         return self.content
 
     def get(self, key, default=None):

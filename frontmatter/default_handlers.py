@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """
+.. testsetup:: handlers
+
+    import frontmatter
+
 By default, ``frontmatter`` reads and writes YAML metadata. But maybe
 you don't like YAML. Maybe enjoy writing metadata in JSON, or TOML, or
 some other exotic markup not yet invented. For this, there are handlers.
@@ -31,11 +35,12 @@ The handler instance gets saved as an attribute on the returned post
 object. By default, calling :py:func:`frontmatter.dumps <frontmatter.dumps>` 
 on the post will use the attached handler.
 
+
 ::
 
     >>> import frontmatter
     >>> from frontmatter.default_handlers import YAMLHandler, TOMLHandler
-    >>> post = frontmatter.load('tests/hello-toml.markdown', handler=TOMLHandler())
+    >>> post = frontmatter.load('tests/toml/hello-toml.md', handler=TOMLHandler())
     >>> post.handler #doctest: +ELLIPSIS
     <frontmatter.default_handlers.TOMLHandler object at 0x...>
 
@@ -92,15 +97,10 @@ These three variations will produce the same export:
 
     # set YAML format when dumping, but the old handler attached
     >>> t1 = frontmatter.dumps(post, handler=YAMLHandler())
-
-    # set a new handler, changing all future exports
-    >>> post.handler = YAMLHandler()
+    >>> post.handler = YAMLHandler() # set a new handler, changing all future exports
     >>> t2 = frontmatter.dumps(post)
-
-    # remove handler, defaulting back to YAML
-    >>> post.handler = None
+    >>> post.handler = None # remove handler, defaulting back to YAML
     >>> t3 = frontmatter.dumps(post)
-
     >>> t1 == t2 == t3
     True
 
@@ -109,10 +109,10 @@ All handlers use the interface defined on ``BaseHandler``. Each handler needs to
 - split metadata and content, based on a boundary pattern (``handler.split``)
 - parse plain text metadata into a Python dictionary (``handler.load``)
 - export a dictionary back into plain text (``handler.export``)
+- format exported metadata and content into a single string (``handler.format``)
 
 
 """
-from __future__ import unicode_literals
 
 import json
 import re
@@ -139,9 +139,18 @@ if toml:
     __all__.append("TOMLHandler")
 
 
-class BaseHandler(object):
+DEFAULT_POST_TEMPLATE = """\
+{start_delimiter}
+{metadata}
+{end_delimiter}
+
+{content}
+"""
+
+
+class BaseHandler:
     """
-    BaseHandler lays out all the steps to detecting, splitting, parsing and 
+    BaseHandler lays out all the steps to detecting, splitting, parsing and
     exporting front matter metadata.
 
     All default handlers are subclassed from BaseHandler.
@@ -169,7 +178,7 @@ class BaseHandler(object):
         Decide whether this handler can parse the given ``text``,
         and return True or False.
 
-        Note that this is *not* called when passing a handler instance to 
+        Note that this is *not* called when passing a handler instance to
         :py:func:`frontmatter.load <frontmatter.load>` or :py:func:`loads <frontmatter.loads>`.
         """
         if self.FM_BOUNDARY.match(text):
@@ -195,6 +204,22 @@ class BaseHandler(object):
         """
         raise NotImplementedError
 
+    def format(self, post, **kwargs):
+        """
+        Turn a post into a string, used in ``frontmatter.dumps``
+        """
+        start_delimiter = kwargs.pop("start_delimiter", self.START_DELIMITER)
+        end_delimiter = kwargs.pop("end_delimiter", self.END_DELIMITER)
+
+        metadata = self.export(post.metadata, **kwargs)
+
+        return DEFAULT_POST_TEMPLATE.format(
+            metadata=metadata,
+            content=post.content,
+            start_delimiter=start_delimiter,
+            end_delimiter=end_delimiter,
+        ).strip()
+
 
 class YAMLHandler(BaseHandler):
     """
@@ -207,7 +232,7 @@ class YAMLHandler(BaseHandler):
 
     def load(self, fm, **kwargs):
         """
-        Parse YAML front matter. This uses yaml.SafeLoader by default. 
+        Parse YAML front matter. This uses yaml.SafeLoader by default.
         """
         kwargs.setdefault("Loader", SafeLoader)
         return yaml.load(fm, **kwargs)
