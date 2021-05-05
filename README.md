@@ -4,7 +4,7 @@
 
 This is a small package to load and parse files (or just text) with YAML (or JSON, TOML or other) front matter.
 
-[![Tests](https://github.com/eyeseast/feed-to-sqlite/workflows/Test/badge.svg)](https://github.com/eyeseast/feed-to-sqlite/actions?query=workflow%3ATest)
+[![Tests](https://github.com/eyeseast/python-frontmatter/workflows/Test/badge.svg)](https://github.com/eyeseast/python-frontmatter/actions?query=workflow%3ATest)
 [![PyPI](https://img.shields.io/pypi/v/python-frontmatter.svg)](https://pypi.org/project/python-frontmatter/)
 
 **[Documentation](https://python-frontmatter.readthedocs.io/en/latest/)**
