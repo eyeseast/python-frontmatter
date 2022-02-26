@@ -12,6 +12,9 @@ This module includes handlers for YAML, JSON and TOML, as well as a
 :py:class:`BaseHandler <frontmatter.default_handlers.BaseHandler>` that 
 outlines the basic API and can be subclassed to deal with new formats.
 
+**Note**: The TOML handler is only available if the `toml <https://pypi.org/project/toml/>`_
+library is installed.
+
 Handlers
 --------
 
