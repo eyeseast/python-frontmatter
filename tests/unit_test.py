@@ -320,15 +320,6 @@ class HandlerBaseTest:
         if any_fail:
             self.fail(failmsg)
 
-    @unittest.skip("metadata can be reordered")
-    def test_split_export(self):
-        text = self.read_from_tests()
-        fm, content = self.handler.split(text)
-
-        fm_export = self.handler.export(self.data["metadata"])
-
-        self.assertEqual(fm_export, fm)
-
 
 class YAMLHandlerTest(HandlerBaseTest, unittest.TestCase):
     def setUp(self):

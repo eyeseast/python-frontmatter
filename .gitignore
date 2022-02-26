@@ -56,3 +56,6 @@ target/
 
 .DS_Store
 .vscode/
+Pipfile
+Pipfile.lock
+.env

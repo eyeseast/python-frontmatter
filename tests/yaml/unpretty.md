@@ -12,8 +12,8 @@ destination:
     print_to_stdout: true
   url: http://localhost:3456/uri
 filter:
-  - 'Длинный стринг на русском'
-  - 'Еще одна длинная строка'
+  - Длинный стринг на русском
+  - Еще одна длинная строка
 ---
 
 This is a test of both unicode and prettier dumping. The above metadata comes from the [pretty-yaml](https://github.com/mk-fg/pretty-yaml) readme file.

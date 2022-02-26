@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Generate result files for test content. Won't overwrite any that exit.
+Generate result files for test content. Won't overwrite any that exist.
 """
 import json
 from pathlib import Path
