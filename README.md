@@ -43,6 +43,14 @@ Or load from text:
 
 ```
 
+If the file has a [Byte-Order Mark](https://en.wikipedia.org/wiki/Byte_order_mark) (BOM), strip it off first. An easy way to do this is by using the [`utf-8-sig`](https://docs.python.org/3/library/codecs.html?highlight=utf%208%20sig#module-encodings.utf_8_sig) encoding:
+
+```python
+>>> with open('tests/yaml/hello-world.txt', encoding="utf-8-sig") as f:
+...     post = frontmatter.load(f)
+
+```
+
 Access content:
 
 ```python
