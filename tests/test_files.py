@@ -2,7 +2,7 @@
 Test individual files with frontmatter against expected results.
 Files should be in a subdirectory under `tests`, usually sorted by format (yaml, toml, json).
 
-For a file called hello-world.markdown, there should be a corresponding file called hello-world.json
+For a file called hello-world.markdown, there should be a corresponding file called hello-world.result.json
 matching the expected output.
 """
 import os
@@ -22,7 +22,7 @@ def files():
 
 
 def get_result_filename(path):
-    root, ext = os.path.splitext(path)
+    root, _ = os.path.splitext(path)
     return f"{root}.result.json"
 
 

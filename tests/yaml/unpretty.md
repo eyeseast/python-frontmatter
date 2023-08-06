@@ -2,14 +2,14 @@
 destination:
   encoding:
     xz:
-      enabled: true
+      enabled: yes
       min_size: 5120
       options:
       path_filter:
   result:
     append_to_file:
     append_to_lafs_dir:
-    print_to_stdout: true
+    print_to_stdout: yes
   url: http://localhost:3456/uri
 filter:
   - Длинный стринг на русском

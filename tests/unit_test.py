@@ -115,9 +115,7 @@ class FrontmatterTest(unittest.TestCase):
 
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
-        # pyaml only runs on 2.7 and above
         if pyaml is not None:
-
             with codecs.open("tests/yaml/unpretty.md", "r", "utf-8") as f:
                 data = f.read()
 
@@ -125,10 +123,10 @@ class FrontmatterTest(unittest.TestCase):
             yaml = pyaml.dump(post.metadata)
 
             # the unsafe dumper gives you nicer output, for times you want that
-            dump = frontmatter.dumps(post, Dumper=pyaml.UnsafePrettyYAMLDumper)
+            dump = frontmatter.dumps(post, Dumper=pyaml.PYAMLDumper)
 
-            self.assertEqual(dump, data)
             self.assertTrue(yaml in dump)
+            self.assertEqual(dump, data)
 
     def test_with_crlf_string(self):
         markdown_bytes = b'---\r\ntitle: "my title"\r\ncontent_type: "post"\r\npublished: no\r\n---\r\n\r\nwrite your content in markdown here'
