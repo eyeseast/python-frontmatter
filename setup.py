@@ -11,7 +11,7 @@ with open("README.md") as f:
     readme = f.read()
 
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 
 setup(
@@ -41,6 +41,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     test_suite="test",
 )
