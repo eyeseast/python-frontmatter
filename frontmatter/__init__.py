@@ -6,8 +6,7 @@ from __future__ import annotations
 
 import codecs
 import io
-import os
-from typing import TYPE_CHECKING, Iterable, cast
+from typing import TYPE_CHECKING, Iterable
 
 from .util import u
 from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
