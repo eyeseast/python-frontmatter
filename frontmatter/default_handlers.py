@@ -116,10 +116,18 @@ All handlers use the interface defined on ``BaseHandler``. Each handler needs to
 
 
 """
+from __future__ import annotations
 
 import json
 import re
 import yaml
+
+from types import ModuleType
+from typing import TYPE_CHECKING, Any, Type
+
+SafeDumper: Type[yaml.CDumper] | Type[yaml.SafeDumper]
+SafeLoader: Type[yaml.CSafeLoader] | Type[yaml.SafeLoader]
+toml: ModuleType | None
 
 try:
     from yaml import CSafeDumper as SafeDumper
@@ -134,6 +142,10 @@ except ImportError:
     toml = None
 
 from .util import u
+
+
+if TYPE_CHECKING:
+    from frontmatter import Post
 
 
 __all__ = ["BaseHandler", "YAMLHandler", "JSONHandler"]
@@ -159,11 +171,16 @@ class BaseHandler:
     All default handlers are subclassed from BaseHandler.
     """
 
-    FM_BOUNDARY = None
-    START_DELIMITER = None
-    END_DELIMITER = None
+    FM_BOUNDARY: re.Pattern[str] | None = None
+    START_DELIMITER: str | None = None
+    END_DELIMITER: str | None = None
 
-    def __init__(self, fm_boundary=None, start_delimiter=None, end_delimiter=None):
+    def __init__(
+        self,
+        fm_boundary: re.Pattern[str] | None = None,
+        start_delimiter: str | None = None,
+        end_delimiter: str | None = None,
+    ):
         self.FM_BOUNDARY = fm_boundary or self.FM_BOUNDARY
         self.START_DELIMITER = start_delimiter or self.START_DELIMITER
         self.END_DELIMITER = end_delimiter or self.END_DELIMITER
@@ -176,7 +193,7 @@ class BaseHandler:
                 )
             )
 
-    def detect(self, text):
+    def detect(self, text: str) -> bool:
         """
         Decide whether this handler can parse the given ``text``,
         and return True or False.
@@ -184,30 +201,32 @@ class BaseHandler:
         Note that this is *not* called when passing a handler instance to
         :py:func:`frontmatter.load <frontmatter.load>` or :py:func:`loads <frontmatter.loads>`.
         """
+        assert self.FM_BOUNDARY is not None
         if self.FM_BOUNDARY.match(text):
             return True
         return False
 
-    def split(self, text):
+    def split(self, text: str) -> tuple[str, str]:
         """
         Split text into frontmatter and content
         """
+        assert self.FM_BOUNDARY is not None
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return fm, content
 
-    def load(self, fm):
+    def load(self, fm: str) -> dict[str, Any]:
         """
         Parse frontmatter and return a dict
         """
         raise NotImplementedError
 
-    def export(self, metadata, **kwargs):
+    def export(self, metadata: dict[str, object], **kwargs: object) -> str:
         """
         Turn metadata back into text
         """
         raise NotImplementedError
 
-    def format(self, post, **kwargs):
+    def format(self, post: Post, **kwargs: object) -> str:
         """
         Turn a post into a string, used in ``frontmatter.dumps``
         """
@@ -233,14 +252,14 @@ class YAMLHandler(BaseHandler):
     FM_BOUNDARY = re.compile(r"^-{3,}\s*$", re.MULTILINE)
     START_DELIMITER = END_DELIMITER = "---"
 
-    def load(self, fm, **kwargs):
+    def load(self, fm: str, **kwargs: object) -> Any:
         """
         Parse YAML front matter. This uses yaml.SafeLoader by default.
         """
         kwargs.setdefault("Loader", SafeLoader)
-        return yaml.load(fm, **kwargs)
+        return yaml.load(fm, **kwargs)  # type: ignore[arg-type]
 
-    def export(self, metadata, **kwargs):
+    def export(self, metadata: dict[str, object], **kwargs: object) -> str:
         """
         Export metadata as YAML. This uses yaml.SafeDumper by default.
         """
@@ -248,8 +267,8 @@ class YAMLHandler(BaseHandler):
         kwargs.setdefault("default_flow_style", False)
         kwargs.setdefault("allow_unicode", True)
 
-        metadata = yaml.dump(metadata, **kwargs).strip()
-        return u(metadata)  # ensure unicode
+        metadata_str = yaml.dump(metadata, **kwargs).strip()  # type: ignore[call-overload]
+        return u(metadata_str)  # ensure unicode
 
 
 class JSONHandler(BaseHandler):
@@ -263,40 +282,42 @@ class JSONHandler(BaseHandler):
     START_DELIMITER = ""
     END_DELIMITER = ""
 
-    def split(self, text):
+    def split(self, text: str) -> tuple[str, str]:
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return "{" + fm + "}", content
 
-    def load(self, fm, **kwargs):
-        return json.loads(fm, **kwargs)
+    def load(self, fm: str, **kwargs: object) -> Any:
+        return json.loads(fm, **kwargs)  # type: ignore[arg-type]
 
-    def export(self, metadata, **kwargs):
+    def export(self, metadata: dict[str, object], **kwargs: object) -> str:
         "Turn metadata into JSON"
         kwargs.setdefault("indent", 4)
-        metadata = json.dumps(metadata, **kwargs)
-        return u(metadata)
+        metadata_str = json.dumps(metadata, **kwargs)  # type: ignore[arg-type]
+        return u(metadata_str)
+
+
+class _TOMLHandler(BaseHandler):
+    """
+    Load and export TOML metadata.
+
+    By default, split based on ``+++``.
+    """
+
+    FM_BOUNDARY = re.compile(r"^\+{3,}\s*$", re.MULTILINE)
+    START_DELIMITER = END_DELIMITER = "+++"
+
+    def load(self, fm: str, **kwargs: object) -> Any:
+        assert toml is not None
+        return toml.loads(fm, **kwargs)
+
+    def export(self, metadata: dict[str, object], **kwargs: object) -> str:
+        "Turn metadata into TOML"
+        assert toml is not None
+        metadata_str = toml.dumps(metadata)
+        return u(metadata_str)
 
 
 if toml:
-
-    class TOMLHandler(BaseHandler):
-        """
-        Load and export TOML metadata.
-
-        By default, split based on ``+++``.
-        """
-
-        FM_BOUNDARY = re.compile(r"^\+{3,}\s*$", re.MULTILINE)
-        START_DELIMITER = END_DELIMITER = "+++"
-
-        def load(self, fm, **kwargs):
-            return toml.loads(fm, **kwargs)
-
-        def export(self, metadata, **kwargs):
-            "Turn metadata into TOML"
-            metadata = toml.dumps(metadata)
-            return u(metadata)
-
-
+    TOMLHandler: Type[_TOMLHandler] | None = _TOMLHandler
 else:
     TOMLHandler = None

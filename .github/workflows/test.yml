@@ -27,3 +27,6 @@ jobs:
       - name: Run tests
         run: |
           pytest . --doctest-modules --doctest-glob "README.md"
+      - name: Run type checking
+        run: |
+          mypy .
