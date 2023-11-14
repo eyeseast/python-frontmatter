@@ -317,6 +317,8 @@ class _TOMLHandler(BaseHandler):
         return u(metadata_str)
 
 
+_TOMLHandler.__name__ = "TOMLHandler"
+
 if toml:
     TOMLHandler: Type[_TOMLHandler] | None = _TOMLHandler
 else:
