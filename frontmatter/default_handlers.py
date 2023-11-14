@@ -296,30 +296,27 @@ class JSONHandler(BaseHandler):
         return u(metadata_str)
 
 
-class _TOMLHandler(BaseHandler):
-    """
-    Load and export TOML metadata.
-
-    By default, split based on ``+++``.
-    """
-
-    FM_BOUNDARY = re.compile(r"^\+{3,}\s*$", re.MULTILINE)
-    START_DELIMITER = END_DELIMITER = "+++"
-
-    def load(self, fm: str, **kwargs: object) -> Any:
-        assert toml is not None
-        return toml.loads(fm, **kwargs)
-
-    def export(self, metadata: dict[str, object], **kwargs: object) -> str:
-        "Turn metadata into TOML"
-        assert toml is not None
-        metadata_str = toml.dumps(metadata)
-        return u(metadata_str)
-
-
-_TOMLHandler.__name__ = "TOMLHandler"
-
 if toml:
-    TOMLHandler: Type[_TOMLHandler] | None = _TOMLHandler
+
+    class TOMLHandler(BaseHandler):
+        """
+        Load and export TOML metadata.
+
+        By default, split based on ``+++``.
+        """
+
+        FM_BOUNDARY = re.compile(r"^\+{3,}\s*$", re.MULTILINE)
+        START_DELIMITER = END_DELIMITER = "+++"
+
+        def load(self, fm: str, **kwargs: object) -> Any:
+            assert toml is not None
+            return toml.loads(fm, **kwargs)
+
+        def export(self, metadata: dict[str, object], **kwargs: object) -> str:
+            "Turn metadata into TOML"
+            assert toml is not None
+            metadata_str = toml.dumps(metadata)
+            return u(metadata_str)
+
 else:
-    TOMLHandler = None
+    TOMLHandler: Type[TOMLHandler] | None = None  #  type: ignore[no-redef]
