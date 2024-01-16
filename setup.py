@@ -26,7 +26,10 @@ setup(
     packages=["frontmatter"],
     include_package_data=True,
     install_requires=["PyYAML"],
-    extras_require={"test": ["pytest", "toml", "pyaml"], "docs": ["sphinx"]},
+    extras_require={
+        "test": ["pytest", "toml", "pyaml", "mypy", "types-PyYAML", "types-toml"],
+        "docs": ["sphinx"],
+    },
     tests_require=["python-frontmatter[test]"],
     license="MIT",
     zip_safe=False,

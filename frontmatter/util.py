@@ -2,14 +2,17 @@
 """
 Utilities for handling unicode and other repetitive bits
 """
+from typing import AnyStr
 
 
-def u(text, encoding="utf-8"):
+def u(text: AnyStr, encoding: str = "utf-8") -> str:
     "Return unicode text, no matter what"
 
     if isinstance(text, bytes):
-        text = text.decode(encoding)
+        text_str: str = text.decode(encoding)
+    else:
+        text_str = text
 
     # it's already unicode
-    text = text.replace("\r\n", "\n")
-    return text
+    text_str = text_str.replace("\r\n", "\n")
+    return text_str

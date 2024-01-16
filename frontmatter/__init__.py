@@ -2,13 +2,18 @@
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
+from __future__ import annotations
 
 import codecs
-import re
-
+import io
+from typing import TYPE_CHECKING, Iterable
 
 from .util import u
 from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
+
+
+if TYPE_CHECKING:
+    from .default_handlers import BaseHandler
 
 
 __all__ = ["parse", "load", "loads", "dump", "dumps"]
@@ -22,7 +27,7 @@ handlers = [
 ]
 
 
-def detect_format(text, handlers):
+def detect_format(text: str, handlers: Iterable[BaseHandler]) -> BaseHandler | None:
     """
     Figure out which handler to use, based on metadata.
     Returns a handler instance or None.
@@ -40,7 +45,12 @@ def detect_format(text, handlers):
     return None
 
 
-def parse(text, encoding="utf-8", handler=None, **defaults):
+def parse(
+    text: str,
+    encoding: str = "utf-8",
+    handler: BaseHandler | None = None,
+    **defaults: object,
+) -> tuple[dict[str, object], str]:
     """
     Parse text with frontmatter, return metadata and content.
     Pass in optional metadata defaults as keyword args.
@@ -79,14 +89,14 @@ def parse(text, encoding="utf-8", handler=None, **defaults):
         return metadata, text
 
     # parse, now that we have frontmatter
-    fm = handler.load(fm)
-    if isinstance(fm, dict):
-        metadata.update(fm)
+    fm_data = handler.load(fm)
+    if isinstance(fm_data, dict):
+        metadata.update(fm_data)
 
     return metadata, content.strip()
 
 
-def check(fd, encoding="utf-8"):
+def check(fd: str | io.IOBase, encoding: str = "utf-8") -> bool:
     """
     Check if a file-like object or filename has a frontmatter,
     return True if exists, False otherwise.
@@ -109,7 +119,7 @@ def check(fd, encoding="utf-8"):
     return checks(text, encoding)
 
 
-def checks(text, encoding="utf-8"):
+def checks(text: str, encoding: str = "utf-8") -> bool:
     """
     Check if a text (binary or unicode) has a frontmatter,
     return True if exists, False otherwise.
@@ -127,7 +137,12 @@ def checks(text, encoding="utf-8"):
     return detect_format(text, handlers) != None
 
 
-def load(fd, encoding="utf-8", handler=None, **defaults):
+def load(
+    fd: str | io.IOBase,
+    encoding: str = "utf-8",
+    handler: BaseHandler | None = None,
+    **defaults: object,
+) -> Post:
     """
     Load and parse a file-like object or filename,
     return a :py:class:`post <frontmatter.Post>`.
@@ -150,7 +165,12 @@ def load(fd, encoding="utf-8", handler=None, **defaults):
     return loads(text, encoding, handler, **defaults)
 
 
-def loads(text, encoding="utf-8", handler=None, **defaults):
+def loads(
+    text: str,
+    encoding: str = "utf-8",
+    handler: BaseHandler | None = None,
+    **defaults: object,
+) -> Post:
     """
     Parse text (binary or unicode) and return a :py:class:`post <frontmatter.Post>`.
 
@@ -166,7 +186,13 @@ def loads(text, encoding="utf-8", handler=None, **defaults):
     return Post(content, handler, **metadata)
 
 
-def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
+def dump(
+    post: Post,
+    fd: str | io.IOBase,
+    encoding: str = "utf-8",
+    handler: BaseHandler | None = None,
+    **kwargs: object,
+) -> None:
     """
     Serialize :py:class:`post <frontmatter.Post>` to a string and write to a file-like object.
     Text will be encoded on the way out (utf-8 by default).
@@ -213,7 +239,7 @@ def dump(post, fd, encoding="utf-8", handler=None, **kwargs):
             f.write(content)
 
 
-def dumps(post, handler=None, **kwargs):
+def dumps(post: Post, handler: BaseHandler | None = None, **kwargs: object) -> str:
     """
     Serialize a :py:class:`post <frontmatter.Post>` to a string and return text.
     This always returns unicode text, which can then be encoded.
@@ -265,46 +291,48 @@ class Post(object):
     For convenience, metadata values are available as proxied item lookups.
     """
 
-    def __init__(self, content, handler=None, **metadata):
+    def __init__(
+        self, content: str, handler: BaseHandler | None = None, **metadata: object
+    ) -> None:
         self.content = str(content)
         self.metadata = metadata
         self.handler = handler
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> object:
         "Get metadata key"
         return self.metadata[name]
 
-    def __contains__(self, item):
+    def __contains__(self, item: object) -> bool:
         "Check metadata contains key"
         return item in self.metadata
 
-    def __setitem__(self, name, value):
+    def __setitem__(self, name: str, value: object) -> None:
         "Set a metadata key"
         self.metadata[name] = value
 
-    def __delitem__(self, name):
+    def __delitem__(self, name: str) -> None:
         "Delete a metadata key"
         del self.metadata[name]
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self.content.encode("utf-8")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.content
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: object = None) -> object:
         "Get a key, fallback to default"
         return self.metadata.get(key, default)
 
-    def keys(self):
+    def keys(self) -> Iterable[str]:
         "Return metadata keys"
         return self.metadata.keys()
 
-    def values(self):
+    def values(self) -> Iterable[object]:
         "Return metadata values"
         return self.metadata.values()
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, object]:
         "Post as a dict, for serializing"
         d = self.metadata.copy()
         d["content"] = self.content
