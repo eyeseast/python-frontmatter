@@ -11,7 +11,7 @@ with open("README.md") as f:
     readme = f.read()
 
 
-VERSION = "1.0.1"
+VERSION = "1.1.0"
 
 
 setup(
