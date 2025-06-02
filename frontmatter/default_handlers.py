@@ -299,7 +299,7 @@ class JSONHandler(BaseHandler):
 
 if toml:
 
-    class TOMLHandler(BaseHandler):  # type: ignore[no-redef]
+    class TOMLHandler(BaseHandler):  # pyright: ignore
         """
         Load and export TOML metadata.
 
