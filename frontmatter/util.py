@@ -7,11 +7,11 @@ from typing import TypeGuard, TextIO
 
 
 def is_readable(fd: object) -> TypeGuard[TextIO]:
-    return callable(getattr(fd, "read"))
+    return callable(getattr(fd, "read", None))
 
 
 def is_writable(fd: object) -> TypeGuard[TextIO]:
-    return callable(getattr(fd, "write"))
+    return callable(getattr(fd, "write", None))
 
 
 def can_open(fd: object) -> TypeGuard[str | PathLike[str]]:
