@@ -4,12 +4,13 @@ Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
 from __future__ import annotations
 
-import codecs
 import io
-from typing import TYPE_CHECKING, Iterable
+import pathlib
+from os import PathLike
+from typing import TYPE_CHECKING, Iterable, TextIO
 
-from .util import u
-from .default_handlers import YAMLHandler, JSONHandler, TOMLHandler
+from .default_handlers import JSONHandler, TOMLHandler, YAMLHandler
+from .util import can_open, is_readable, is_writable, u
 
 
 if TYPE_CHECKING:
@@ -96,7 +97,7 @@ def parse(
     return metadata, content.strip()
 
 
-def check(fd: str | io.IOBase, encoding: str = "utf-8") -> bool:
+def check(fd: TextIO | PathLike[str] | str, encoding: str = "utf-8") -> bool:
     """
     Check if a file-like object or filename has a frontmatter,
     return True if exists, False otherwise.
@@ -109,12 +110,16 @@ def check(fd: str | io.IOBase, encoding: str = "utf-8") -> bool:
         True
 
     """
-    if hasattr(fd, "read"):
+    if is_readable(fd):
         text = fd.read()
 
-    else:
-        with codecs.open(fd, "r", encoding) as f:
+    elif can_open(fd):
+        with open(fd, "r", encoding=encoding) as f:
             text = f.read()
+
+    else:
+        # no idea what we're dealing with
+        return False
 
     return checks(text, encoding)
 
@@ -138,7 +143,7 @@ def checks(text: str, encoding: str = "utf-8") -> bool:
 
 
 def load(
-    fd: str | io.IOBase,
+    fd: str | io.IOBase | pathlib.Path,
     encoding: str = "utf-8",
     handler: BaseHandler | None = None,
     **defaults: object,
@@ -154,12 +159,15 @@ def load(
         ...     post = frontmatter.load(f)
 
     """
-    if hasattr(fd, "read"):
+    if is_readable(fd):
         text = fd.read()
 
-    else:
-        with codecs.open(fd, "r", encoding) as f:
+    elif can_open(fd):
+        with open(fd, "r", encoding=encoding) as f:
             text = f.read()
+
+    else:
+        raise ValueError(f"Cannot open filename using type {type(fd)}")
 
     handler = handler or detect_format(text, handlers)
     return loads(text, encoding, handler, **defaults)
@@ -188,7 +196,7 @@ def loads(
 
 def dump(
     post: Post,
-    fd: str | io.IOBase,
+    fd: str | PathLike[str] | TextIO,
     encoding: str = "utf-8",
     handler: BaseHandler | None = None,
     **kwargs: object,
@@ -231,12 +239,15 @@ def dump(
 
     """
     content = dumps(post, handler, **kwargs)
-    if hasattr(fd, "write"):
-        fd.write(content.encode(encoding))
+    if is_writable(fd):
+        fd.write(content)
+
+    elif can_open(fd):
+        with open(fd, "w", encoding=encoding) as f:
+            f.write(content)
 
     else:
-        with codecs.open(fd, "w", encoding) as f:
-            f.write(content)
+        raise ValueError(f"Cannot open filename using type {type(fd)}")
 
 
 def dumps(post: Post, handler: BaseHandler | None = None, **kwargs: object) -> str:
@@ -278,6 +289,7 @@ def dumps(post: Post, handler: BaseHandler | None = None, **kwargs: object) -> s
     if handler is None:
         handler = getattr(post, "handler", None) or YAMLHandler()
 
+    assert handler is not None
     return handler.format(post, **kwargs)
 
 
