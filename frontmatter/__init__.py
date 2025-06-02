@@ -207,11 +207,11 @@ def dump(
 
     ::
 
-        >>> from io import BytesIO
+        >>> from io import StringIO
         >>> post = frontmatter.load('tests/yaml/hello-world.txt')
-        >>> f = BytesIO()
+        >>> f = StringIO()
         >>> frontmatter.dump(post, f)
-        >>> print(f.getvalue().decode('utf-8'))
+        >>> print(f.getvalue())
         ---
         layout: post
         title: Hello, world!
@@ -222,11 +222,11 @@ def dump(
 
     .. testcode::
 
-        from io import BytesIO
+        from io import StringIO
         post = frontmatter.load('tests/yaml/hello-world.txt')
-        f = BytesIO()
+        f = StringIO()
         frontmatter.dump(post, f)
-        print(f.getvalue().decode('utf-8'))
+        print(f.getvalue())
 
     .. testoutput::
 
