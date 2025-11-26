@@ -110,10 +110,10 @@ Well, hello there, world.
 Or write to a file (or file-like object):
 
 ```python
->>> from io import BytesIO
->>> f = BytesIO()
+>>> from io import StringIO
+>>> f = StringIO()
 >>> frontmatter.dump(post, f)
->>> print(f.getvalue().decode('utf-8')) # doctest: +NORMALIZE_WHITESPACE
+>>> print(f.getvalue()) # doctest: +NORMALIZE_WHITESPACE
 ---
 excerpt: tl;dr
 layout: post

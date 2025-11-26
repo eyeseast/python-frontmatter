@@ -8,8 +8,8 @@ By default, ``frontmatter`` reads and writes YAML metadata. But maybe
 you don't like YAML. Maybe enjoy writing metadata in JSON, or TOML, or
 some other exotic markup not yet invented. For this, there are handlers.
 
-This module includes handlers for YAML, JSON and TOML, as well as a 
-:py:class:`BaseHandler <frontmatter.default_handlers.BaseHandler>` that 
+This module includes handlers for YAML, JSON and TOML, as well as a
+:py:class:`BaseHandler <frontmatter.default_handlers.BaseHandler>` that
 outlines the basic API and can be subclassed to deal with new formats.
 
 **Note**: The TOML handler is only available if the `toml <https://pypi.org/project/toml/>`_
@@ -32,10 +32,10 @@ A handler needs to do four things:
 
 An example:
 
-Calling :py:func:`frontmatter.load <frontmatter.load>` (or :py:func:`loads <frontmatter.loads>`) 
-with the ``handler`` argument tells frontmatter which handler to use. 
-The handler instance gets saved as an attribute on the returned post 
-object. By default, calling :py:func:`frontmatter.dumps <frontmatter.dumps>` 
+Calling :py:func:`frontmatter.load <frontmatter.load>` (or :py:func:`loads <frontmatter.loads>`)
+with the ``handler`` argument tells frontmatter which handler to use.
+The handler instance gets saved as an attribute on the returned post
+object. By default, calling :py:func:`frontmatter.dumps <frontmatter.dumps>`
 on the post will use the attached handler.
 
 
@@ -67,7 +67,7 @@ on the post will use the attached handler.
     <BLANKLINE>
     And this shouldn't break.
 
-Passing a new handler to :py:func:`frontmatter.dumps <frontmatter.dumps>` 
+Passing a new handler to :py:func:`frontmatter.dumps <frontmatter.dumps>`
 (or :py:func:`dump <frontmatter.dump>`) changes the export format:
 
 ::
@@ -283,6 +283,7 @@ class JSONHandler(BaseHandler):
     END_DELIMITER = ""
 
     def split(self, text: str) -> tuple[str, str]:
+        assert self.FM_BOUNDARY is not None
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return "{" + fm + "}", content
 
@@ -298,7 +299,7 @@ class JSONHandler(BaseHandler):
 
 if toml:
 
-    class TOMLHandler(BaseHandler):
+    class TOMLHandler(BaseHandler):  # pyright: ignore
         """
         Load and export TOML metadata.
 
