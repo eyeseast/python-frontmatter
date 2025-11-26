@@ -304,7 +304,7 @@ class Post(object):
     """
 
     def __init__(
-        self, content: str, handler: BaseHandler | None = None, **metadata: object
+        self, content: str, handler: BaseHandler | None = None, /, **metadata: object
     ) -> None:
         self.content = str(content)
         self.metadata = metadata
