@@ -240,7 +240,7 @@ class BaseHandler:
             content=post.content,
             start_delimiter=start_delimiter,
             end_delimiter=end_delimiter,
-        ).strip()
+        ).lstrip()
 
 
 class YAMLHandler(BaseHandler):
