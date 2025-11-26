@@ -1,0 +1,5 @@
+---
+content: bad key
+---
+
+Ooops!
