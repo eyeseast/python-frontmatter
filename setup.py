@@ -24,6 +24,7 @@ setup(
     author_email="eyeseast@gmail.com",
     url="https://github.com/eyeseast/python-frontmatter",
     packages=["frontmatter"],
+    package_data={"frontmatter": ["py.typed"]},
     include_package_data=True,
     install_requires=["PyYAML"],
     extras_require={
