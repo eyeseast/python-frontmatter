@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-import codecs
-import doctest
-import glob
-import json
 import os
 import shutil
-import sys
 import tempfile
 import textwrap
 import unittest
@@ -70,7 +64,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_no_frontmatter(self):
         "This is not a zen exercise."
         post = frontmatter.load("tests/empty/no-frontmatter.txt")
-        with codecs.open("tests/empty/no-frontmatter.txt", "r", "utf-8") as f:
+        with open("tests/empty/no-frontmatter.txt", "r", "utf-8") as f:
             content = f.read().strip()
 
         self.assertEqual(post.metadata, {})
@@ -116,7 +110,7 @@ class FrontmatterTest(unittest.TestCase):
     def test_pretty_dumping(self):
         "Use pyaml to dump nicer"
         if pyaml is not None:
-            with codecs.open("tests/yaml/unpretty.md", "r", "utf-8") as f:
+            with open("tests/yaml/unpretty.md", "r", "utf-8") as f:
                 data = f.read()
 
             post = frontmatter.load("tests/yaml/unpretty.md")
@@ -183,7 +177,7 @@ class HandlerTest(unittest.TestCase):
         "detect format based on default handlers"
 
         for filename, Handler in self.TEST_FILES.items():
-            with codecs.open(filename, "r", "utf-8") as f:
+            with open(filename, "r", "utf-8") as f:
                 format = frontmatter.detect_format(f.read(), frontmatter.handlers)
                 self.assertIsInstance(format, Handler)
 
@@ -207,14 +201,12 @@ class HandlerTest(unittest.TestCase):
 
         # not including this in the regular test directory
         # because it would/should be invalid per the defaults
-        custom = textwrap.dedent(
-            """
+        custom = textwrap.dedent("""
         ...
         dummy frontmatter
         ...
         dummy content
-        """
-        )
+        """)
 
         # and a custom handler that really doesn't do anything
         class DummyHandler(object):
