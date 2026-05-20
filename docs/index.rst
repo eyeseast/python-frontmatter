@@ -8,20 +8,27 @@ Python Frontmatter
 
 .. module:: frontmatter
 
-`Jekyll <http://jekyllrb.com/>`__-style YAML front matter offers a
-useful way to add arbitrary, structured metadata to text documents,
-regardless of type.
+`Front matter <https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter>`__
+offers a useful way to add arbitrary, structured metadata to text
+documents, regardless of type.
 
-This is a package to load and parse files (or text strings) with YAML
-front matter.
+This is a small package to load and parse files (or just text) with YAML
+(or JSON, TOML or other) front matter.
 
 
 Install
 --------
 
-::
+.. code-block:: shell
 
+    # with pip
     pip install python-frontmatter
+
+    # or uv
+    uv add python-frontmatter
+
+    # local development, with uv
+    uv sync
 
 Usage
 ------
@@ -49,6 +56,16 @@ Or load from text:
 
     >>> with open('tests/yaml/hello-world.txt') as f:
     ...     post = frontmatter.loads(f.read())
+
+If the file has a `Byte-Order Mark <https://en.wikipedia.org/wiki/Byte_order_mark>`__
+(BOM), strip it off first. An easy way to do this is by using the
+`utf-8-sig <https://docs.python.org/3/library/codecs.html?highlight=utf%208%20sig#module-encodings.utf_8_sig>`__
+encoding:
+
+::
+
+    >>> with open('tests/yaml/hello-world.txt', encoding="utf-8-sig") as f:
+    ...     post = frontmatter.load(f)
 
 Access content:
 
@@ -115,6 +132,11 @@ Or write to a file (or file-like object):
     title: Hello, world!
     ---
     Well, hello there, world.
+
+For more examples, see files in the ``tests/`` directory. Each sample
+file has a corresponding ``.result.json`` file showing the expected
+parsed output. See also the ``examples/`` directory, which covers more
+ways to customize input and output.
 
 
 .. toctree::

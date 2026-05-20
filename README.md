@@ -1,6 +1,6 @@
 # Python Frontmatter
 
-[Jekyll](http://jekyllrb.com/)-style YAML front matter offers a useful way to add arbitrary, structured metadata to text documents, regardless of type.
+[Front matter](https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter) offers a useful way to add arbitrary, structured metadata to text documents, regardless of type.
 
 This is a small package to load and parse files (or just text) with YAML (or JSON, TOML or other) front matter.
 
@@ -11,7 +11,16 @@ This is a small package to load and parse files (or just text) with YAML (or JSO
 
 ## Install:
 
-    pip install python-frontmatter
+```shell
+# with pip
+pip install python-frontmatter
+
+# or uv
+uv add python-frontmatter
+
+# local development, with uv
+uv sync
+```
 
 ## Usage:
 
