@@ -61,6 +61,14 @@ class FrontmatterTest(unittest.TestCase):
 
         self.assertEqual(ret, True)
 
+    def test_non_string_metadata_keys(self):
+        "YAML allows non-string mapping keys (e.g. ints); loads must not choke on them."
+        post = frontmatter.loads("---\n1: one\n2: two\n---\nbody")
+        self.assertEqual(post.metadata, {1: "one", 2: "two"})
+        self.assertEqual(post.content, "body")
+        # and the post still round-trips through dumps/loads
+        self.assertEqual(frontmatter.loads(frontmatter.dumps(post)).metadata, post.metadata)
+
     def test_no_frontmatter(self):
         "This is not a zen exercise."
         post = frontmatter.load("tests/empty/no-frontmatter.txt")

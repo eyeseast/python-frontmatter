@@ -191,7 +191,13 @@ def loads(
     text = u(text, encoding)
     handler = handler or detect_format(text, handlers)
     metadata, content = parse(text, encoding, handler, **defaults)
-    return Post(content, handler, **metadata)
+    # Assign the metadata dict directly rather than splatting it as keyword
+    # arguments: YAML/TOML mappings allow non-string keys (ints, booleans,
+    # dates), and Post(content, handler, **metadata) raises "keywords must be
+    # strings" on those, even though the front matter itself is valid.
+    post = Post(content, handler)
+    post.metadata = metadata
+    return post
 
 
 def dump(
