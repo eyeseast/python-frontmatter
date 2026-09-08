@@ -5,6 +5,7 @@ Python Frontmatter: Parse and manage posts with YAML frontmatter
 from __future__ import annotations
 
 import io
+import os
 import pathlib
 from os import PathLike
 from typing import TYPE_CHECKING, Iterable, TextIO
@@ -196,7 +197,7 @@ def loads(
 
 def dump(
     post: Post,
-    fd: str | PathLike[str] | TextIO,
+    fd: str | os.PathLike[str] | TextIO,
     encoding: str = "utf-8",
     handler: BaseHandler | None = None,
     **kwargs: object,
