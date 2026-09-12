@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from io import BytesIO, StringIO
 import shutil
 import tempfile
 import textwrap
@@ -26,6 +27,28 @@ class FrontmatterTest(unittest.TestCase):
     """
 
     maxDiff = None
+
+    def test_load_binary_stream(self):
+        text = "---\ntitle: Café\n---\nBonjour"
+        for encoding in ("utf-8", "utf-16"):
+            with self.subTest(encoding=encoding):
+                post = frontmatter.load(BytesIO(text.encode(encoding)), encoding=encoding)
+                self.assertEqual(post.metadata, {"title": "Café"})
+                self.assertEqual(post.content, "Bonjour")
+                self.assertIsInstance(post.handler, YAMLHandler)
+
+        post = frontmatter.load(StringIO(text))
+        self.assertEqual(post.metadata, {"title": "Café"})
+        self.assertEqual(post.content, "Bonjour")
+
+    def test_load_binary_file(self):
+        with tempfile.TemporaryFile("w+b") as stream:
+            stream.write(b'{\n"title": "Hello"\n}\nBody')
+            stream.seek(0)
+            post = frontmatter.load(stream, author="Ada")
+        self.assertEqual(post.metadata, {"title": "Hello", "author": "Ada"})
+        self.assertEqual(post.content, "Body")
+        self.assertIsInstance(post.handler, JSONHandler)
 
     def test_with_markdown_content(self):
         "Parse frontmatter and only the frontmatter"
