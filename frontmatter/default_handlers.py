@@ -283,9 +283,15 @@ class JSONHandler(BaseHandler):
     END_DELIMITER = ""
 
     def split(self, text: str) -> tuple[str, str]:
-        assert self.FM_BOUNDARY is not None
-        _, fm, content = self.FM_BOUNDARY.split(text, 2)
-        return "{" + fm + "}", content
+        try:
+            _, end = json.JSONDecoder().raw_decode(text)
+        except json.JSONDecodeError:
+            # Preserve existing malformed-frontmatter behavior: load() raises
+            # for invalid JSON with delimiters; missing boundaries stay content.
+            assert self.FM_BOUNDARY is not None
+            _, fm, content = self.FM_BOUNDARY.split(text, 2)
+            return "{" + fm + "}", content
+        return text[:end], text[end:]
 
     def load(self, fm: str, **kwargs: object) -> Any:
         return json.loads(fm, **kwargs)  # type: ignore[arg-type]
