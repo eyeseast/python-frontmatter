@@ -316,7 +316,7 @@ if toml:
         def export(self, metadata: dict[str, object], **kwargs: object) -> str:
             "Turn metadata into TOML"
             assert toml is not None
-            metadata_str = toml.dumps(metadata)
+            metadata_str = toml.dumps(metadata, **kwargs)
             return u(metadata_str)
 
 else:
