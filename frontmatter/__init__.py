@@ -2,6 +2,7 @@
 """
 Python Frontmatter: Parse and manage posts with YAML frontmatter
 """
+
 from __future__ import annotations
 
 import io
@@ -11,7 +12,6 @@ from typing import TYPE_CHECKING, Iterable, TextIO
 
 from .default_handlers import JSONHandler, TOMLHandler, YAMLHandler
 from .util import can_open, is_readable, is_writable, u
-
 
 if TYPE_CHECKING:
     from .default_handlers import BaseHandler

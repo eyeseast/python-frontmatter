@@ -29,10 +29,10 @@ uv run mypy .
 
 The tests include the code examples in `README.md` and in docstrings, so if you change how output looks, update those examples too.
 
-Format any Python files you change with [Black](https://black.readthedocs.io/):
+Code is formatted with [Black](https://black.readthedocs.io/), and CI fails if it isn't. Format before you commit:
 
 ```shell
-uvx black path/to/file.py
+uv run black .
 ```
 
 ## In your pull request

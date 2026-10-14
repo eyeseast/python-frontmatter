@@ -5,6 +5,7 @@ Files should be in a subdirectory under `tests`, usually sorted by format (yaml,
 For a file called hello-world.markdown, there should be a corresponding file called hello-world.result.json
 matching the expected output.
 """
+
 import os
 import json
 from itertools import chain

@@ -11,6 +11,7 @@ uv sync                                                     # install deps (dev 
 uv run pytest . --doctest-modules --doctest-glob "README.md" # full suite, as CI runs it
 uv run pytest tests/unit_test.py::FrontmatterTest::test_name # single test (unittest classes)
 uv run mypy .                                               # strict type checking (mypy.ini)
+uv run black .                                              # format (CI runs `black --check .`)
 make -C docs html                                           # build Sphinx docs (also `make -C docs doctest`)
 uv build                                                    # build sdist/wheel
 ```
