@@ -127,6 +127,22 @@ class FrontmatterTest(unittest.TestCase):
         loaded = frontmatter.loads(markdown_bytes, "utf-8")
         self.assertEqual(loaded["title"], "my title")
 
+    def test_universal_newlines(self):
+        "Parse strings with the same line endings accepted when loading files"
+        for filename in HandlerTest.TEST_FILES:
+            with open(filename, encoding="utf-8") as f:
+                text = f.read()
+            expected = frontmatter.loads(text)
+            for newline in ("\n", "\r\n", "\r"):
+                normalized = text.replace("\n", newline)
+                for data in (normalized, normalized.encode("utf-8")):
+                    with self.subTest(filename=filename, newline=newline, type=type(data)):
+                        post = frontmatter.loads(data)
+                        self.assertEqual(post.metadata, expected.metadata)
+                        self.assertEqual(post.content, expected.content)
+                        self.assertIs(post.handler, expected.handler)
+                        self.assertTrue(frontmatter.checks(data))
+
     def test_dumping_with_custom_delimiters(self):
         "dump with custom delimiters"
         post = frontmatter.load("tests/yaml/hello-world.txt")

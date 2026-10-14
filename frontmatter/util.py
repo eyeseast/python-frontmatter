@@ -28,5 +28,5 @@ def u(text: str | bytes, encoding: str = "utf-8") -> str:
         text_str = str(text)
 
     # it's already unicode
-    text_str = text_str.replace("\r\n", "\n")
+    text_str = text_str.replace("\r\n", "\n").replace("\r", "\n")
     return text_str
