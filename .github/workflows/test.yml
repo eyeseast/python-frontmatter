@@ -38,3 +38,5 @@ jobs:
         run: uv run pytest . --doctest-modules --doctest-glob "README.md"
       - name: Run type checking
         run: uv run mypy .
+      - name: Build distributions
+        run: uv build --force-pep517
