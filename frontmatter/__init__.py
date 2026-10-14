@@ -188,7 +188,7 @@ def loads(
         ...     post = frontmatter.loads(f.read())
 
     """
-    text = u(text, encoding)
+    text = u(text, encoding).strip()
     handler = handler or detect_format(text, handlers)
     metadata, content = parse(text, encoding, handler, **defaults)
     return Post(content, handler, **metadata)
