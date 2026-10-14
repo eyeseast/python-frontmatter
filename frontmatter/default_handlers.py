@@ -116,6 +116,7 @@ All handlers use the interface defined on ``BaseHandler``. Each handler needs to
 
 
 """
+
 from __future__ import annotations
 
 import json
@@ -142,7 +143,6 @@ except ImportError:
     toml = None
 
 from .util import u
-
 
 if TYPE_CHECKING:
     from frontmatter import Post
@@ -320,4 +320,4 @@ if toml:
             return u(metadata_str)
 
 else:
-    TOMLHandler: Type[TOMLHandler] | None = None  #  type: ignore[no-redef]
+    TOMLHandler: Type[TOMLHandler] | None = None  # type: ignore[no-redef]

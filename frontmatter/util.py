@@ -2,6 +2,7 @@
 """
 Utilities for handling unicode and other repetitive bits
 """
+
 from os import PathLike
 from typing import TypeGuard, TextIO
 
