@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import textwrap
 import unittest
+from pathlib import PurePosixPath, PureWindowsPath
 
 import frontmatter
 from frontmatter.default_handlers import YAMLHandler, JSONHandler, TOMLHandler
@@ -231,6 +232,26 @@ class HandlerTest(unittest.TestCase):
         metadata = {"author": "bob", "something": "else", "test": "tester"}
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
+
+    def test_toml_export_with_custom_encoder(self):
+        if toml is None:
+            self.skipTest("toml is not installed")
+        handler = TOMLHandler()
+        metadata = {"image": PurePosixPath("assets/logo.svg")}
+        exported = handler.export(metadata, encoder=toml.TomlPathlibEncoder())
+        self.assertEqual(toml.loads(exported), {"image": "assets/logo.svg"})
+
+    def test_toml_custom_encoder_round_trip(self):
+        if toml is None:
+            self.skipTest("toml is not installed")
+        for path in (PurePosixPath("assets/logo.svg"), PureWindowsPath("assets/logo.svg")):
+            with self.subTest(path=path):
+                post = frontmatter.Post("Body", handler=TOMLHandler(), image=path)
+                text = frontmatter.dumps(post, encoder=toml.TomlPathlibEncoder())
+                loaded = frontmatter.loads(text)
+                self.assertEqual(loaded.metadata, {"image": str(path)})
+                self.assertEqual(loaded.content, "Body")
+                self.assertIsInstance(loaded.handler, TOMLHandler)
 
     def test_json(self):
         "load raw JSON frontmatter"
