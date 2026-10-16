@@ -257,7 +257,27 @@ class YAMLHandler(BaseHandler):
         Parse YAML front matter. This uses yaml.SafeLoader by default.
         """
         kwargs.setdefault("Loader", SafeLoader)
-        return yaml.load(fm, **kwargs)  # type: ignore[arg-type]
+        try:
+            return yaml.load(fm, **kwargs)  # type: ignore[arg-type]
+        except yaml.YAMLError as exc:
+            mark = getattr(exc, "problem_mark", None)
+            location = (
+                f" at line {mark.line + 1}, column {mark.column + 1}"
+                if mark is not None
+                else ""
+            )
+            problem = getattr(exc, "problem", None) or str(exc).splitlines()
+            if isinstance(problem, list):
+                problem = problem[0] if problem else "YAML parsing failed"
+            problem = problem.rstrip(".")
+            hint = (
+                " If a plain-text value contains ': ', quote it."
+                if problem == "mapping values are not allowed in this context"
+                else ""
+            )
+            raise yaml.YAMLError(
+                f"Invalid YAML front matter{location}: {problem}.{hint}"
+            ) from exc
 
     def export(self, metadata: dict[str, object], **kwargs: object) -> str:
         """

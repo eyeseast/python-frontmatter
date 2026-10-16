@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import io
 import os
 import shutil
 import tempfile
 import textwrap
 import unittest
+import yaml
 
 import frontmatter
 from frontmatter.default_handlers import YAMLHandler, JSONHandler, TOMLHandler
@@ -312,6 +314,26 @@ class HandlerBaseTest:
 
 
 class YAMLHandlerTest(HandlerBaseTest, unittest.TestCase):
+    def test_invalid_colon_value_explains_yaml_error(self):
+        text = '---\ntitle: Assignment 1: Some Title\n---\n\n# Hello world!'
+
+        with self.assertRaisesRegex(
+            yaml.YAMLError, "Invalid YAML front matter.*line 2.*quote it"
+        ) as raised:
+            frontmatter.load(io.StringIO(text))
+
+        self.assertIsInstance(raised.exception.__cause__, yaml.YAMLError)
+
+    def test_quoted_colon_value_still_loads(self):
+        text = '---\ntitle: "Assignment 1: Some Title"\n---\n\n# Hello world!'
+        self.assertEqual(frontmatter.loads(text)["title"], "Assignment 1: Some Title")
+
+    def test_other_yaml_errors_get_context_without_colon_hint(self):
+        text = "---\ntitle: [unfinished\n---\n\n# Hello world!"
+        with self.assertRaisesRegex(yaml.YAMLError, "Invalid YAML front matter") as raised:
+            frontmatter.loads(text)
+        self.assertNotIn("quote it", str(raised.exception))
+
     def setUp(self):
         self.handler = YAMLHandler()
         self.data = {
