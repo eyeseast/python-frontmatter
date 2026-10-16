@@ -247,6 +247,23 @@ class YAMLHandler(BaseHandler):
     """
     Load and export YAML metadata. By default, this handler uses YAML's
     "safe" mode, though it's possible to override that.
+
+    YAML output sorts metadata keys by default. Pass ``sort_keys=False`` to
+    :py:func:`frontmatter.dumps` or :py:func:`frontmatter.dump` to retain the
+    dictionary's insertion order, including keys added after loading::
+
+        >>> post = frontmatter.loads('---\\n' 'title: Hello\\n' 'author: Ada\\n' '---\\n' 'Body')
+        >>> post['date'] = '2026-01-01'
+        >>> print(frontmatter.dumps(post, sort_keys=False))
+        ---
+        title: Hello
+        author: Ada
+        date: '2026-01-01'
+        ---
+        <BLANKLINE>
+        Body
+
+    This preserves key order, not the original YAML formatting or comments.
     """
 
     FM_BOUNDARY = re.compile(r"^-{3,}\s*$", re.MULTILINE)
