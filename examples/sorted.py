@@ -1,7 +1,8 @@
 """
-This is an example of setting ``sort_keys=False`` in ``frontmatter.dumps`` 
+This is an example of setting ``sort_keys=False`` in ``frontmatter.dumps``
 to preserve the original sort order.
 """
+
 import frontmatter
 from pathlib import Path
 

@@ -38,6 +38,7 @@ dev = [
     "types-PyYAML",
     "types-toml",
     "sphinx",
+    "black>=26.10.1",
 ]
 
 
