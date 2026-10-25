@@ -20,7 +20,7 @@ def can_open(fd: object) -> TypeGuard[str | PathLike[str]]:
 
 
 def u(text: str | bytes, encoding: str = "utf-8") -> str:
-    "Return unicode text, no matter what"
+    "Return unicode text with CRLF and standalone CR normalized to LF."
 
     if isinstance(text, bytes):
         text_str: str = text.decode(encoding)

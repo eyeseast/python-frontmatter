@@ -136,7 +136,9 @@ class FrontmatterTest(unittest.TestCase):
             for newline in ("\n", "\r\n", "\r"):
                 normalized = text.replace("\n", newline)
                 for data in (normalized, normalized.encode("utf-8")):
-                    with self.subTest(filename=filename, newline=newline, type=type(data)):
+                    with self.subTest(
+                        filename=filename, newline=newline, type=type(data)
+                    ):
                         post = frontmatter.loads(data)
                         self.assertEqual(post.metadata, expected.metadata)
                         self.assertEqual(post.content, expected.content)
