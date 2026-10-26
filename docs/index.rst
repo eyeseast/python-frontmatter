@@ -6,7 +6,9 @@
 Python Frontmatter
 =====================
 
-.. module:: frontmatter
+.. _module-frontmatter:
+
+.. currentmodule:: frontmatter
 
 `Front matter <https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter>`__
 offers a useful way to add arbitrary, structured metadata to text
@@ -152,4 +154,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

@@ -36,11 +36,9 @@ Post objects
 Handlers
 --------
 
-.. autoclass:: frontmatter.default_handlers.BaseHandler
-    :members: 
+See :doc:`handlers` for the handler API and customization examples:
 
-.. autoclass:: frontmatter.default_handlers.YAMLHandler
-
-.. autoclass:: frontmatter.default_handlers.JSONHandler
-
-.. autoclass:: frontmatter.default_handlers.TOMLHandler
+* :class:`~frontmatter.default_handlers.BaseHandler`
+* :class:`~frontmatter.default_handlers.YAMLHandler`
+* :class:`~frontmatter.default_handlers.JSONHandler`
+* :class:`~frontmatter.default_handlers.TOMLHandler`

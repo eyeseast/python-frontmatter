@@ -38,3 +38,8 @@ jobs:
         run: uv run pytest . --doctest-modules --doctest-glob "README.md"
       - name: Run type checking
         run: uv run mypy .
+      - name: Build documentation
+        if: matrix.python-version == '3.13'
+        run: |
+          uv run sphinx-build -n -W --keep-going -b html docs build/html
+          uv run sphinx-build -n -W --keep-going -b man docs build/man
