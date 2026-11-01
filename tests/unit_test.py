@@ -232,6 +232,28 @@ class HandlerTest(unittest.TestCase):
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
 
+    def test_json_empty_metadata(self):
+        """removing the last JSON key keeps the round trip intact"""
+        post = frontmatter.loads('{\n "title": "draft"\n}\n\nBody')
+        del post["title"]
+        self.assertEqual(post.metadata, {})
+
+        serialized = frontmatter.dumps(post)
+        self.assertEqual(serialized, '{}\n\n\nBody')
+
+        self.assertTrue(frontmatter.checks(serialized))
+        reloaded = frontmatter.loads(serialized)
+        self.assertEqual(reloaded.metadata, post.metadata)
+        self.assertEqual(reloaded.content, post.content)
+        self.assertIsInstance(reloaded.handler, JSONHandler)
+
+    def test_json_handler_empty_object(self):
+        """JSONHandler detects and splits a single-line empty object"""
+        handler = JSONHandler()
+        self.assertTrue(handler.detect('{}\n\nBody'))
+        self.assertEqual(handler.split('{}\n\nBody'), ('{}', '\n\nBody'))
+        self.assertEqual(handler.load(handler.split('{}\n\nBody')[0]), {})
+
     def test_json(self):
         "load raw JSON frontmatter"
         post = frontmatter.load("tests/json/hello-json.md")
