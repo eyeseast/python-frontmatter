@@ -279,11 +279,28 @@ class JSONHandler(BaseHandler):
     """
 
     FM_BOUNDARY = re.compile(r"^(?:{|})$", re.MULTILINE)
+    # empty metadata exports as a single empty object line, which FM_BOUNDARY misses
+    FM_EMPTY_BOUNDARY = re.compile(r"^\{\}")
     START_DELIMITER = ""
     END_DELIMITER = ""
 
+    def detect(self, text: str) -> bool:
+        """
+        In addition to matching brace-only lines, match a front matter block
+        collapsed to a single line, like the empty object this handler exports
+        for empty metadata.
+        """
+        if self.FM_EMPTY_BOUNDARY.match(text):
+            return True
+        return super().detect(text)
+
     def split(self, text: str) -> tuple[str, str]:
         assert self.FM_BOUNDARY is not None
+        match = self.FM_EMPTY_BOUNDARY.match(text)
+        if match:
+            # an empty object followed by a blank line and the body has no
+            # closing-brace line to split on
+            return match.group(0), text[match.end() :]
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return "{" + fm + "}", content
 
