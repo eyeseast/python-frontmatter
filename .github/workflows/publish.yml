@@ -36,4 +36,4 @@ jobs:
       - name: Build
         run: uv build
       - name: Publish
-        run: uv publish
+        uses: pypa/gh-action-pypi-publish@v1.14.0
