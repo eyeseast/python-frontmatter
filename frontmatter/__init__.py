@@ -169,7 +169,6 @@ def load(
     else:
         raise ValueError(f"Cannot open filename using type {type(fd)}")
 
-    handler = handler or detect_format(text, handlers)
     return loads(text, encoding, handler, **defaults)
 
 
