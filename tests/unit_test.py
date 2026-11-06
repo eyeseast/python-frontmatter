@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import io
 import os
 import shutil
 import tempfile
@@ -185,6 +186,26 @@ class HandlerTest(unittest.TestCase):
         "Run sanity check on all handlers"
         for filename, Handler in self.TEST_FILES.items():
             self.sanity_check(filename, Handler)
+
+    def test_leading_whitespace_preserves_handler(self):
+        "Preserve the detected format when parsing strips leading whitespace"
+        for filename, Handler in self.TEST_FILES.items():
+            with open(filename, encoding="utf-8") as f:
+                text = f.read()
+            expected = frontmatter.loads(text)
+            for prefix in ("\n", " \t\r\n"):
+                for loader in (
+                    frontmatter.loads,
+                    lambda text: frontmatter.load(io.StringIO(text)),
+                ):
+                    with self.subTest(filename=filename, prefix=prefix, loader=loader):
+                        post = loader(prefix + text)
+                        self.assertEqual(post.metadata, expected.metadata)
+                        self.assertEqual(post.content, expected.content)
+                        self.assertIsInstance(post.handler, Handler)
+                        self.assertEqual(
+                            frontmatter.dumps(post), frontmatter.dumps(expected)
+                        )
 
     def test_no_handler(self):
         "default to YAMLHandler when no handler is attached"
