@@ -132,4 +132,9 @@ Well, hello there, world.
 
 ```
 
+To keep YAML keys in their existing order when saving, use
+`frontmatter.dumps(post, sort_keys=False)` or
+`frontmatter.dump(post, f, sort_keys=False)`. New keys appear at the end.
+This preserves dictionary order, not YAML comments or formatting.
+
 For more examples, see files in the `tests/` directory. Each sample file has a corresponding `.result.json` file showing the expected parsed output. See also the `examples/` directory, which covers more ways to customize input and output.
