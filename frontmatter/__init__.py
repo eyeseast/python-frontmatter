@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import io
 import pathlib
+import re
+import warnings
 from os import PathLike
 from typing import TYPE_CHECKING, Iterable, TextIO
 
@@ -80,6 +82,13 @@ def parse(
     # this will only run if a handler hasn't been set higher up
     handler = handler or detect_format(text, handlers)
     if handler is None:
+        if TOMLHandler is None and re.match(r"^\+{3,}\s*$", text, re.MULTILINE):
+            warnings.warn(
+                "TOML front matter detected, but TOML support is not installed. "
+                "Install 'python-frontmatter[toml]' to parse it.",
+                UserWarning,
+                stacklevel=2,
+            )
         return metadata, text
 
     # split on the delimiters

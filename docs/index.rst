@@ -30,6 +30,13 @@ Install
     # local development, with uv
     uv sync
 
+To read or write TOML front matter, install the optional dependency::
+
+    pip install 'python-frontmatter[toml]'
+
+Without it, parsing a document with TOML delimiters emits a warning and leaves
+the document as content, without extracting its metadata.
+
 Usage
 ------
 
@@ -152,4 +159,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
