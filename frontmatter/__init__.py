@@ -57,7 +57,9 @@ def parse(
     Pass in optional metadata defaults as keyword args.
 
     If frontmatter is not found, returns an empty metadata dictionary
-    (or defaults) and original text content.
+    (or defaults) and original text content. The same happens when the
+    frontmatter block parses to a non-mapping value, since plain text
+    between delimiters is content, not metadata.
 
     .. testsetup:: *
 
@@ -93,6 +95,15 @@ def parse(
     fm_data = handler.load(fm)
     if isinstance(fm_data, dict):
         metadata.update(fm_data)
+
+    elif fm_data is not None:
+        # The block parsed to a non-mapping value: a plain string or a
+        # list is valid YAML but not metadata, and usually means these
+        # were never frontmatter delimiters at all (e.g. a ``---``
+        # thematic break near the top of a Markdown file). Keep the
+        # whole file as content instead of silently dropping the text
+        # between the delimiters. See issue #155.
+        return metadata, text
 
     return metadata, content.strip()
 

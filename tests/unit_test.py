@@ -78,6 +78,32 @@ class FrontmatterTest(unittest.TestCase):
         self.assertEqual(post.metadata, {})
         self.assertEqual(post.content, content)
 
+    def test_non_mapping_frontmatter_is_content(self):
+        "Text between delimiters that parses to a non-mapping value is not metadata"
+        text = "---\nsome markdown text\n---\nbody\n"
+        post = frontmatter.loads(text)
+
+        self.assertEqual(post.metadata, {})
+        self.assertEqual(post.content, text.strip())
+
+    def test_list_frontmatter_is_content(self):
+        "A list between delimiters is valid YAML but not metadata"
+        text = "---\n- a\n- b\n---\nbody\n"
+        post = frontmatter.loads(text)
+
+        self.assertEqual(post.metadata, {})
+        self.assertEqual(post.content, text.strip())
+
+    def test_thematic_break_file_roundtrip_loses_no_text(self):
+        "A `---` thematic break near the top of a file keeps its text (issue #155)"
+        text = "---\n\nSome intro text\n\n---\n\nMore content\n"
+        post = frontmatter.loads(text)
+
+        self.assertEqual(post.metadata, {})
+        # no text between the delimiters is dropped
+        self.assertIn("Some intro text", post.content)
+        self.assertIn("More content", post.content)
+
     def test_extra_space(self):
         "Extra space in frontmatter delimiter"
         post = frontmatter.load("tests/yaml/extra-space.txt")
