@@ -275,6 +275,8 @@ class JSONHandler(BaseHandler):
     """
     Load and export JSON metadata.
 
+    Empty metadata is exported as ``{}`` and can be loaded again as JSON front matter.
+
     Note that changing ``START_DELIMITER`` or ``END_DELIMITER`` may break JSON parsing.
     """
 
@@ -282,7 +284,13 @@ class JSONHandler(BaseHandler):
     START_DELIMITER = ""
     END_DELIMITER = ""
 
+    def detect(self, text: str) -> bool:
+        """Detect JSON front matter, including an empty metadata object."""
+        return text == "{}" or text.startswith("{}\n") or super().detect(text)
+
     def split(self, text: str) -> tuple[str, str]:
+        if text.startswith("{}"):
+            return "{}", text[2:]
         assert self.FM_BOUNDARY is not None
         _, fm, content = self.FM_BOUNDARY.split(text, 2)
         return "{" + fm + "}", content
