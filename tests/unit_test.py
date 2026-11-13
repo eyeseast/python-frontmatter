@@ -239,6 +239,34 @@ class HandlerTest(unittest.TestCase):
         for k, v in metadata.items():
             self.assertEqual(post[k], v)
 
+    def test_empty_json_roundtrip(self):
+        "Removing the last metadata key keeps the JSON format and body."
+        for content in ("Body", "Body\n{\nmore content\n}", ""):
+            with self.subTest(content=content):
+                post = frontmatter.loads('{\n"title": "draft"\n}\n\n' + content)
+                del post["title"]
+                serialized = frontmatter.dumps(post)
+                reloaded = frontmatter.loads(serialized)
+
+                self.assertTrue(frontmatter.checks(serialized))
+                self.assertIsInstance(reloaded.handler, JSONHandler)
+                self.assertEqual(reloaded.metadata, {})
+                self.assertEqual(reloaded.content, content)
+
+    def test_empty_json_explicit_handler(self):
+        "An explicit JSON handler can read the empty object it exports."
+        post = frontmatter.Post("Body", handler=JSONHandler())
+        serialized = frontmatter.dumps(post)
+        reloaded = frontmatter.loads(serialized, handler=JSONHandler())
+        self.assertEqual(reloaded.metadata, {})
+        self.assertEqual(reloaded.content, "Body")
+
+    def test_json_with_empty_nested_object(self):
+        "An empty nested object is not a front matter boundary."
+        post = frontmatter.loads('{\n"nested":\n{}\n}\n\nBody')
+        self.assertEqual(post.metadata, {"nested": {}})
+        self.assertEqual(post.content, "Body")
+
 
 class HandlerBaseTest:
     """
